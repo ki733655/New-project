@@ -7,7 +7,7 @@ const AttendanceForm = () => {
     name: '',
     email: '',
     select: "",
-    currentDate: '',
+    empId: '',
     inTime: '',
     outTime: '',
   });
@@ -40,7 +40,7 @@ const AttendanceForm = () => {
         name: '',
         email: '',
         select: "",
-        currentDate: '',
+        empId: '',
         inTime: '',
         outTime: '',
       });
@@ -114,14 +114,14 @@ const AttendanceForm = () => {
         </div>
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="date">
-            Date
+            Emp Id
           </label>
           <input
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="currentDate"
-            type="date"
-            name="currentDate"
-            value={formData.currentDate}
+            id="empId"
+            type="text"
+            name="empId"
+            value={formData.empId}
             onChange={handleChange}
             required
           />
@@ -137,7 +137,6 @@ const AttendanceForm = () => {
             name="inTime"
             value={formData.inTime}
             onChange={handleChange}
-            required
           />
         </div>
         <div className="mb-6">
@@ -151,7 +150,6 @@ const AttendanceForm = () => {
             name="outTime"
             value={formData.outTime}
             onChange={handleChange}
-            required
           />
         </div>
         <div className="flex items-center justify-between">
