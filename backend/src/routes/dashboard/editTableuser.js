@@ -13,7 +13,7 @@ router.put("/edit-table-user", async (req, res) => {
         name: req.body.name,
         email: req.body.email,
         select: req.body.select,
-        currentDate: req.body.currentDate,
+        empId: req.body.empId,
         inTime: req.body.inTime,
         outTime: req.body.outTime,
       },
@@ -22,7 +22,8 @@ router.put("/edit-table-user", async (req, res) => {
       }
     );
     // Respond with a success message or appropriate status code
-    res.send(data).status(200).json({ message: `Data updated successfully` });
+    res.send(data).status(200);
+    console.log("data updated successfully", data);
   } catch (error) {
     // Handle any errors and respond with an appropriate status code and error message
     console.error("Error updating data:", error);

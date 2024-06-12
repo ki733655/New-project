@@ -40,7 +40,7 @@ const Signup = () => {
       alert(`Account created`)
       if(response.data){
         localStorage.setItem("user", response.data.name)
-        router.push("/dashboard")
+        router.push("/dashboard-user")
       }
       
       // clean up code

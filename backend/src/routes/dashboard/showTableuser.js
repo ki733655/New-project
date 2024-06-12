@@ -7,7 +7,7 @@ router.get("/show-table-user", async(req, res) => {
     try{
         const data = await tableModel.find()
      res.send(data)
-     console.log("data sent to frontend")
+     console.log("table users rendered")
         
     }catch(error) {
         console.log(error)

@@ -5,42 +5,53 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation'
 
 const Login = () => {
-  const router = useRouter()
+  const router = useRouter();
   const [data, setData] = useState({
     email: "",
     password: "",
-  })
+  });
 
   const [authentication, setAuthentication] = useState(false);
+  const [userAuthentication, setUserAuthentication] = useState(false);
 
   const handleChange = (e) => {
-      const {id, value} = e.target;
-      setData((prev) => ({
-          ...prev,
-          [id] : value,
-      }))
-  }
+    const { id, value } = e.target;
+    setData((prev) => ({
+      ...prev,
+      [id]: value,
+    }));
+  };
 
-  const handleSubmit = async(e) => {
-        e.preventDefault();
-        try{
-              const response = await axios.post("http://localhost:4000/login-form", data)
-              console.log(response.data)
-             if(response.data){
-              setAuthentication(true);
-              localStorage.setItem("user", response.data.name)
-             }
-        }catch(error) {
-          console.log(error)
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post("http://localhost:4000/login-form", data);
+      console.log(response.data);
+      if (response.data.email === "Admin@gmail.com") {
+        setAuthentication(true);
+        localStorage.setItem("admin", response.data.name);
+        localStorage.setItem("email", response.data.email);
 
-        }
-  }
+
+      } else {
+        setUserAuthentication(true);
+        localStorage.setItem("user", response.data.name);
+        localStorage.setItem("email", response.data.email);
+
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     if (authentication) {
       router.push("/dashboard");
     }
-  }, [authentication]);
+    if (userAuthentication) {
+      router.push("/dashboard-user");
+    }
+  }, [authentication, userAuthentication]);
 
   return (
     <>
@@ -50,7 +61,6 @@ const Login = () => {
             Login in to your account
           </h2>
         </div>
-
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <form className="space-y-6">
             <div>
@@ -59,7 +69,7 @@ const Login = () => {
               </label>
               <div className="mt-2">
                 <input
-                name="email"
+                  name="email"
                   id="email"
                   type="email"
                   value={data.email}
@@ -75,18 +85,10 @@ const Login = () => {
                 <label className="block text-sm font-medium leading-6 text-gray-900">
                   Password
                 </label>
-                <div className="text-sm">
-                  <a
-                    href="#"
-                    className="font-semibold text-indigo-600 hover:text-indigo-500"
-                  >
-                    Forgot password?
-                  </a>
-                </div>
               </div>
               <div className="mt-2">
                 <input
-                name="password"
+                  name="password"
                   id="password"
                   type="password"
                   value={data.password}
@@ -111,7 +113,7 @@ const Login = () => {
           <p className="mt-10 text-center text-sm text-gray-500">
             New user ?
             <Link
-              href= "/signup"
+              href="/signup"
               className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
             >
               Signup

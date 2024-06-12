@@ -4,8 +4,8 @@ const mongoose = require("mongoose")
 const tableSchema = new mongoose.Schema({
     name : String,
     email : String,
-    employeeType : String,
-    currentDate : String,
+    select : String,
+    empId : String,
     inTime: String,
     outTime: String
 })
