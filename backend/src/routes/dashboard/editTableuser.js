@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
 
-const tableModel = require("../../models/Table");
+const user = require("../../models/user");
 
 router.put("/edit-table-user", async (req, res) => {
   try {
-    const data = await tableModel.findOneAndUpdate(
+    const data = await user.findOneAndUpdate(
       {
         email: req.body.email,
       },
@@ -14,8 +14,6 @@ router.put("/edit-table-user", async (req, res) => {
         email: req.body.email,
         select: req.body.select,
         empId: req.body.empId,
-        inTime: req.body.inTime,
-        outTime: req.body.outTime,
       },
       {
         new: true,

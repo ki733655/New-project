@@ -1,0 +1,37 @@
+import React from 'react'
+
+const MyProfile = () => {
+  return (
+    <div>
+         <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+        <h2 className="text-2xl font-bold mb-4">Your Profile</h2>
+        <div className="flex items-center space-x-4">
+          <img
+            className="w-12 h-12 rounded-full"
+            src="/avatar.jpg"
+            alt="Profile Picture"
+          ></img>
+          <div>
+            <p className="font-bold">John Doe</p>
+            <p className="text-gray-600">Web Developer</p>
+          </div>
+        </div>
+        <div className="mt-4">
+          <p className="text-gray-700">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus
+            condimentum justo quis purus feugiat condimentum.
+          </p>
+        </div>
+        <div className="mt-6 flex justify-end">
+          <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+            Edit Profile
+          </button>
+        </div>
+      </div>
+    </div>
+    </div>
+  )
+}
+
+export default MyProfile;

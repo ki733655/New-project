@@ -1,13 +1,13 @@
 const express = require("express");
 const router = express.Router();
 
-const tableModel = require("../../models/Table");
+const user = require("../../models/user");
 
 router.delete("/delete-table-user/:email", async (req, res) => {
   const email = req.params.email;
   console.log(email);
   try {
-    await tableModel.deleteOne({ email: email });
+    await user.deleteOne({ email: email });
     // Respond with a success message or appropriate status code
     res
       .status(200)

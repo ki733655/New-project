@@ -1,11 +1,11 @@
 const express = require("express")
 const router = express.Router();
 
-const tableModel = require("../../models/Table")
+const user = require("../../models/user")
 
 router.get("/show-table-user", async(req, res) => {
     try{
-        const data = await tableModel.find()
+        const data = await user.find()
      res.send(data)
      console.log("table users rendered")
         
