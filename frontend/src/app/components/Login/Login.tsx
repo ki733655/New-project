@@ -32,7 +32,6 @@ const Login = () => {
         localStorage.setItem("admin", response.data.name);
         localStorage.setItem("email", response.data.email);
 
-
       } else {
         setUserAuthentication(true);
         localStorage.setItem("user", response.data.name);
@@ -46,10 +45,10 @@ const Login = () => {
 
   useEffect(() => {
     if (authentication) {
-      router.push("/dashboard");
+      router.push("/dashboard-admin");
     }
     if (userAuthentication) {
-      router.push("/dashboard-user");
+      router.push("/dashboard-user");``
     }
   }, [authentication, userAuthentication]);
 

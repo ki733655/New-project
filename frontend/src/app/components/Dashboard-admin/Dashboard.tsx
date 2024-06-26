@@ -9,14 +9,15 @@ import Link from 'next/link';
 import EditAttendance from './EditAttendance';
 import { fetchData } from '@/app/api/lib/tabledata';
 import { Box } from '@mui/material';
+import { MdOutlineCancel } from "react-icons/md";
 
-const formatDate = (dateString) => {
-  const date = new Date(dateString);
-  const day = date.getDate().toString().padStart(2, '0');
-  const month = (date.getMonth() + 1).toString().padStart(2, '0');
-  const year = date.getFullYear();
-  return `${day}-${month}-${year}`;
-};
+// const formatDate = (dateString) => {
+//   const date = new Date(dateString);
+//   const day = date.getDate().toString().padStart(2, '0');
+//   const month = (date.getMonth() + 1).toString().padStart(2, '0');
+//   const year = date.getFullYear();
+//   return `${day}-${month}-${year}`;
+// };
 
 const Dashboard = () => {
   // State variables
@@ -24,6 +25,8 @@ const Dashboard = () => {
   const [tableData, setTableData] = useState([]);
   const [ishandleEdit, setHandleEdit] = useState(null);
   const [showDiv, setShowDiv] = useState(false); // New state for showing the div
+  const [inTime, setInTime] = useState(''); // State for inTime
+  const [outTime, setOutTime] = useState(''); // State for outTime
 
   // Fetch user name and table data on component mount
   useEffect(() => {
@@ -75,13 +78,15 @@ const Dashboard = () => {
     setHandleEdit(data);
   };
 
-  // Toggle div visibility
-  const handleShowDiv = () => {
+  // Toggle div visibility and set inTime and outTime
+  const handleShowDiv = (inTime, outTime) => {
+    setInTime(inTime);
+    setOutTime(outTime);
     setShowDiv(!showDiv);
   };
 
   return (
-    <div className="main p-4 h-full"> 
+    <div className="main p-4 h-full">
       <h1 className="text-3xl font-bold">Welcome {name}</h1>
 
       <div className="tablediv mt-[45vh]">
@@ -105,30 +110,50 @@ const Dashboard = () => {
           </TableHeader>
           <TableBody>
             {/* Mapping over table data to display rows */}
-            {tableData.map((data, idx) => (
-              <TableRow key={idx}>
-                <TableCell>{idx + 1}</TableCell>
-                <TableCell>{data?.name}</TableCell>
-                <TableCell>{data.email}</TableCell>
-                <TableCell>{data.select}</TableCell>
-                <TableCell>{data.empId}</TableCell>
-                <TableCell><Button onClick={handleShowDiv}>Show</Button></TableCell>
-                <TableCell>
-                  {/* Buttons for editing and deleting data */}
-                  <div className='flex gap-4'>
-                    <MdDelete onClick={() => handleDelete(data.email)} />
-                    <FaEdit onClick={() => handleEdit(data)} />
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
+            {tableData.filter(data => data.select !== 'admin') // Filter out 'admin' users
+              .map((data, idx) => (
+                <TableRow key={idx}>
+                  <TableCell>{idx + 1}</TableCell>
+                  <TableCell>{data?.name}</TableCell>
+                  <TableCell>{data.email}</TableCell>
+                  <TableCell>{data.select}</TableCell>
+                  <TableCell>{data.empId}</TableCell>
+                  <TableCell>
+                    <Button onClick={() => handleShowDiv(data.inTime, data.outTime)}>Show</Button>
+                  </TableCell>
+                  <TableCell>
+                    {/* Buttons for editing and deleting data */}
+                    <div className='flex gap-4'>
+                      <MdDelete onClick={() => handleDelete(data.email)} />
+                      <FaEdit onClick={() => handleEdit(data)} />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </div>
-      
+
       {/* Render div if showDiv is true */}
-      {showDiv && <div className = "h-[60vh] w-[30vw] border-black absolute top-[50vh] left-[30vh]">use client</div>}
-      
+      {showDiv && (
+        <div className="h-[70vh] w-[35vw] border-black absolute top-[20vh] left-[34vw]" style={{ display: "flex", justifyContent: "space-evenly", padding: "2vh", backgroundColor: "#fafcfb", boxShadow: "0 8px 12px rgba(0, 0, 0, 0.2), 0 4px 6px rgba(0, 0, 0, 0.15)" }}>
+          <div className='mt-4'>
+            <h2 style={{ fontSize: "1.8rem", color: "skyblue", fontFamily: "cursive", marginBottom: "2vh" }}>Intime :</h2>
+            {inTime.slice().reverse().map((time, index) => ( // Using slice() to create a copy and then reverse()
+              <h4 key={index}>{time}</h4>
+            ))}
+          </div>
+          <div className="mt-4">
+            <h2 style={{ fontSize: "1.8rem", color: "skyblue", fontFamily: "cursive", marginBottom: "2vh" }}>Outime :</h2>
+            {outTime.slice().reverse().map((time, index) => ( // Using slice() to create a copy and then reverse()
+              <h4 key={index}>{time}</h4>
+            ))}
+          </div>
+
+          <MdOutlineCancel className='h-7 w-10 mr-0 absolute right-2 text-red-500' onClick={() => setShowDiv(false)} />
+        </div>
+      )}
+
       {/* Render edit attendance component if editing is enabled */}
       {ishandleEdit && <EditAttendance ishandleEdit={ishandleEdit} setHandleEdit={setHandleEdit} />}
     </div>
