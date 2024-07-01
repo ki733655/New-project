@@ -1,8 +1,8 @@
-"use client"
+"use client";
 import axios from "axios";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { useRouter } from 'next/navigation'
+import { useRouter } from "next/navigation";
 
 const Login = () => {
   const router = useRouter();
@@ -25,19 +25,19 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:4000/login-form", data);
+      const response = await axios.post(
+        "http://localhost:4000/login-form",
+        data
+      );
       console.log(response.data);
       if (response.data.email === "Admin@gmail.com") {
         setAuthentication(true);
         localStorage.setItem("admin", response.data.name);
         localStorage.setItem("email", response.data.email);
-
-
       } else {
         setUserAuthentication(true);
         localStorage.setItem("user", response.data.name);
         localStorage.setItem("email", response.data.email);
-
       }
     } catch (error) {
       console.log(error);
@@ -55,17 +55,20 @@ const Login = () => {
 
   return (
     <>
-      <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+      <div className="bg-blue-600 flex md:grid-cols-2 w-full">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-          <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-            Login in to your account
+          <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900 text-white">
+            Let' You Login
+          </h2>
+          <h2 className="text-center text-2xl leading-6 tracking-tight text-gray-900 text-white">
+            Welcome to TrackMate
           </h2>
         </div>
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <form className="space-y-6">
             <div>
-              <label className="block text-sm font-medium leading-6 text-gray-900">
-                Email address
+              <label className="block text-sm font-medium leading-6 text-gray-900 text-white">
+                Enter Your Email
               </label>
               <div className="mt-2">
                 <input
@@ -82,8 +85,8 @@ const Login = () => {
 
             <div>
               <div className="flex items-center justify-between">
-                <label className="block text-sm font-medium leading-6 text-gray-900">
-                  Password
+                <label className="block text-sm font-medium leading-6 text-gray-900 text-white">
+                  Enter Your Password
                 </label>
               </div>
               <div className="mt-2">
@@ -100,25 +103,21 @@ const Login = () => {
             </div>
 
             <div>
-              <button
+              <button 
                 type="submit"
                 onClick={handleSubmit}
                 className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
-                Sign in
+                Log in
               </button>
             </div>
           </form>
-
-          <p className="mt-10 text-center text-sm text-gray-500">
-            New user ?
-            <Link
-              href="/signup"
-              className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
-            >
-              Signup
-            </Link>
-          </p>
+          <h1 className="block text-sm font-medium leading-6 text-gray-900 text-white">
+            Forget Password
+          </h1>
+        </div>
+        <div className="image">
+          <img src="./LoginBanner.svg" style={{ maxWidth: 500 }} alt="" />
         </div>
       </div>
     </>
