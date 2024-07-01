@@ -1,10 +1,10 @@
 import React from 'react'
-import MyProfile from '../components/Drawer/MyProfile/MyProfile'
+import Setting from '../components/Drawer/Setting/Setting'
 
 const page = () => {
   return (
     <div>
-        <MyProfile/>
+        <Setting/>
     </div>
   )
 }
