@@ -1,30 +1,33 @@
-"use client"
-import React, { useState } from 'react'
-const MyProfile = () => {
-    const [name, setName] = useState('John Doe');
-    const [bio, setBio] = useState('Web Developer');
-    const [avatar, setAvatar] = useState('/avatar.jpg'); // Default avatar
-  
-    const handleNameChange = (e) => {
-      setName(e.target.value);
+"use client";
+
+import React, { useState } from 'react';
+import Header from '../layout/Header/Header';
+
+const Profile = () => {
+  const [name, setName] = useState('John Doe');
+  const [bio, setBio] = useState('Web Developer');
+  const [avatar, setAvatar] = useState('/avatar.jpg'); // Default avatar
+
+  const handleNameChange = (e) => {
+    setName(e.target.value);
+  };
+
+  const handleBioChange = (e) => {
+    setBio(e.target.value);
+  };
+
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setAvatar(reader.result);
     };
-  
-    const handleBioChange = (e) => {
-      setBio(e.target.value);
-    };
-  
-    const handleAvatarChange = (e) => {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setAvatar(reader.result);
-      };
-      if (file) {
-        reader.readAsDataURL(file);
-      }
-    };
-  
-    return (
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  };
+
+  return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
         <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
           <h2 className="text-2xl font-bold mb-4">Your Profile</h2>
@@ -64,7 +67,7 @@ const MyProfile = () => {
           </div>
         </div>
       </div>
-  )
-}
+  );
+};
 
-export default MyProfile;
+export default Profile;
