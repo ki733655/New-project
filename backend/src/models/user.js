@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema({
     outTime: [String],
     assets : {
         name : String,
-        id : String,
+        model : String,
     }
 })
 
