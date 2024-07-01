@@ -1,0 +1,46 @@
+/* styles/AttendanceCalendar.css */
+
+.react-calendar {
+  /* width: 100%; */
+  margin-left: 20vw;
+  max-width: 600px;
+  background: #fafbfc;
+  border: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.react-calendar__tile {
+  max-width: initial !important;
+  text-align: center;
+  padding: 10px;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.react-calendar__tile:enabled:hover {
+  background-color: #f0f0f0;
+}
+
+.react-calendar__tile--active {
+  background-color: #006edc !important;
+  color: white;
+}
+
+.react-calendar__tile--now {
+  background: #ffffe0 !important;
+  border-radius: 8px;
+}
+
+.react-calendar__tile.present {
+  background-color: green !important;
+  color: white !important;
+}
+
+.react-calendar__tile.absent {
+  background-color: red !important;
+  color: white !important;
+}

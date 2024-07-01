@@ -46,10 +46,10 @@ const Login = () => {
 
   useEffect(() => {
     if (authentication) {
-      router.push("/dashboard");
+      router.push("/dashboard-admin");
     }
     if (userAuthentication) {
-      router.push("/dashboard-user");
+      router.push("/dashboard-user");``
     }
   }, [authentication, userAuthentication]);
 
