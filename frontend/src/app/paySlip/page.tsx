@@ -1,10 +1,10 @@
 import React from 'react'
-import MyProfile from '../components/Drawer/MyProfile/MyProfile'
+import PaySlip from '../components/Drawer/PaySlip/PaySlip'
 
 const page = () => {
   return (
     <div>
-        <MyProfile/>
+        <PaySlip/>
     </div>
   )
 }
