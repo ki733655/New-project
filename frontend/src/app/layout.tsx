@@ -32,7 +32,7 @@ export default function RootLayout({
             <Login />
           ) : (
             <>
-             <Header >
+             <Header>
                <div className="min-h-[80vh] ">
                       {children}
                 </div>
