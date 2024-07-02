@@ -6,6 +6,7 @@ const addTableuser = require("./dashboard/addTableuser");
 const deleteTableuser = require("./dashboard/deleteTableuser");
 const editTableuser = require("./dashboard/editTableuser");
 const attendance = require("./dashboard/calendar/attendance");
+const addPaySlip = require("./paySlip/addPaySlip");
 
 router.get("/", (req, res) => {
   res.send("Hii I am the homepage");
@@ -17,7 +18,8 @@ router.use(
   addTableuser,
   deleteTableuser,
   editTableuser,
-  attendance
+  attendance,
+  addPaySlip
 );
 
 module.exports = router;
