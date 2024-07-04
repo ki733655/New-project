@@ -24,7 +24,7 @@ router.use(
   attendance,
   addPaySlip,
   profile,
-  addDocuments
+  addDocuments 
 );
 
 module.exports = router;

@@ -7,7 +7,7 @@ const Setting = () => {
   useEffect(() => {
     // This will run only on the client side
     setIsClient(typeof window !== 'undefined');
-  }, []);
+  }, []); 
 
   const handleLogout = () => {
     // Clear all local storage and session storage

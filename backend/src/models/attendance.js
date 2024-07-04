@@ -8,4 +8,4 @@ const attendanceSchema = new mongoose.Schema({
 
 const AttendanceModel = new mongoose.model("Attendance", attendanceSchema);
 
-module.exports = AttendanceModel;
+module.exports = AttendanceModel;  

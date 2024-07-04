@@ -87,7 +87,7 @@ const Profile = () => {
   return (
 
     <Box sx={{ padding: 4 }}>
-      <Card sx={{ maxWidth: 800, margin: '0 auto', padding: 3, backgroundColor: '#f9f9f9' }}>
+      <Card sx={{ maxWidth: 800, margin: '0 auto', padding: 3, backgroundColor: '#f9f9f9' }}> 
         <CardContent>
             <Typography variant="h4" sx={{textAlign : "center"}} gutterBottom>Profile</Typography>
           <Grid container spacing={3}>

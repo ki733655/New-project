@@ -10,7 +10,7 @@ const MyProfile = () => {
 
   const handleNameChange = (e) => {
     setName(e.target.value);
-  };
+  }; 
 
   const handleBioChange = (e) => {
     setBio(e.target.value);

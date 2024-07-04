@@ -60,7 +60,7 @@ export default function Dashboard_user2() {
     };
 
     checkButtonStatus();
-
+ 
     const fetchUserByEmail = async (email) => {
       const url = new URL('http://localhost:4000/get-attendance');
       url.searchParams.append('email', email);

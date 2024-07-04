@@ -78,7 +78,7 @@ const PaySlip = () => {
                 ))}
               </Select>
             </FormControl>
-          </Grid>
+          </Grid> 
           <Grid item xs={12} sm={6} md={4}>
             <FormControl fullWidth>
               <InputLabel id="month-select-label">Select the month</InputLabel>

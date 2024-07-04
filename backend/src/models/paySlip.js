@@ -6,7 +6,7 @@ const paySlipSchema = new mongoose.Schema({
         month: String,      // Month as a string
         pdf: Buffer         // Binary data of the PDF file
     }]
-});
+}); 
 
 const PaySlip = mongoose.model("PaySlip", paySlipSchema);
 

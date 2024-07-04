@@ -7,6 +7,6 @@ const page = () => {
         <PaySlip/>
     </div>
   )
-}
+} 
 
 export default page

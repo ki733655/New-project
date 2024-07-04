@@ -4,7 +4,7 @@ import Documents from '../components/Drawer/Documents/Documents'
 const page = () => {
   return (
     <div>
-        <Documents/>
+        <Documents/> 
     </div>
   )
 }

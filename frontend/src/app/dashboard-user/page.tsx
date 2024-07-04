@@ -7,7 +7,7 @@ const page = () => {
     <div>
         {/* <Dashboard_user/> */}
         <Dashboard_user2/>
-    </div>
+    </div> 
   )
 }
 

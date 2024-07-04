@@ -8,7 +8,7 @@ router.post("/add-documents", async (req, res) => {
     const emailbyquery = req.query.email;
     if (!emailbyquery) {
       return res.status(400).send({ error: "Email query parameter is required" });
-    }
+    } 
 
     const documents = [
       { adhaarCard: req.body.adhaarCard },

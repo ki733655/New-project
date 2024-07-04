@@ -10,7 +10,7 @@ router.post("/add-paySlip-data", async (req, res) => {
       year : req.body.year,
       month : req.body.month,
       pdf : req.body.pdf,
-    });
+    }); 
 
     const data = await newPaySlipModel.save();
     res.send(data).status(200);

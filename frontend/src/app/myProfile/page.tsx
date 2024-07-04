@@ -4,7 +4,7 @@ import MyProfile from '../components/myProfile/myProfile';
 const page = () => {
   return (
     <>
-    <MyProfile/>
+    <MyProfile/> 
     </>
   )
 }

@@ -38,7 +38,7 @@ const Login = () => {
         setUserAuthentication(true);
         localStorage.setItem("user", response.data.name);
         localStorage.setItem("email", response.data.email);
-      }
+      } 
     } catch (error) {
       console.log(error);
     }

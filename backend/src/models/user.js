@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema({
   assets: {
     name: String,
     model: String,
-  },
+  },  
   documents: [
     {
       adhaarCard: String,
@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
     { experienceLetter: String },
     {
       bankDetails: {
-        accountNumber: String,
+        accountNumber: String, 
         cifNumber: String,
         ifscCode: String,
         firstName: String,

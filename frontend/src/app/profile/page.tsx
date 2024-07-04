@@ -8,7 +8,7 @@ const page = () => {
     <div>
         <Profile/>
     </div>
-  )
+  ) 
 }
 
 export default page

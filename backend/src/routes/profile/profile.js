@@ -7,7 +7,7 @@ router.get("/get-profile", async (req, res) => {
     const email = req.query.email; // Use req.query to get the query parameter
     if (!email) {
       return res.status(400).send({ error: "Email query parameter is required" });
-    }
+    } 
 
     const data = await User.findOne({ email });
     if (!data) {
