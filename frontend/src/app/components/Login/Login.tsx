@@ -112,9 +112,11 @@ const Login = () => {
               </button>
             </div>
           </form>
+          <Link href="/forgot-pass">
           <h1 className="block text-sm font-medium leading-6 text-gray-900 text-white">
-            Forget Password
+            Forget Password ?
           </h1>
+          </Link>
         </div>
         <div className="image">
           <img src="./LoginBanner.svg" style={{ maxWidth: 500 }} alt="" />

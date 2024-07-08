@@ -31,13 +31,13 @@ export default function RootLayout({
           decider ? (
             <Login />
           ) : (
-            <> 
-             <Header>
-               <div className="min-h-[80vh] ">
-                      {children}
+            <>
+              <Header>
+                <div className="min-h-[80vh] ">
+                  {children}
                 </div>
-             </Header>
-            <Footer />
+                <Footer />
+              </Header>
             </>
           )
         }
