@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const login = require("./login");
+const login = require("./authentication/login");
 const showTableuser = require("./dashboard/showTableuser");
 const addTableuser = require("./dashboard/addTableuser");
 const deleteTableuser = require("./dashboard/deleteTableuser");
@@ -9,6 +9,7 @@ const attendance = require("./dashboard/calendar/attendance");
 const addPaySlip = require("./paySlip/addPaySlip");
 const profile = require("./profile/profile");
 const addDocuments = require("./documents/addDocuments")
+const forgotpass = require("./authentication/forgotpass")
 
 
 router.get("/", (req, res) => {
@@ -24,7 +25,8 @@ router.use(
   attendance,
   addPaySlip,
   profile,
-  addDocuments 
+  addDocuments,
+  forgotpass
 );
 
 module.exports = router;

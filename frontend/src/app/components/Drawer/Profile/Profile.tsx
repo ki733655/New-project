@@ -1,7 +1,8 @@
 "use client"
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, List, ListItem, ListItemText, Divider, Card, CardContent, Grid, Avatar, Paper, styled } from '@mui/material';
+import { Box, Typography, List, ListItem, ListItemText, Divider, Card, CardContent, Grid, Avatar, Paper, styled, InputAdornment, Button, Input } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { MdPhotoCamera } from 'react-icons/md';
 // const userData = {
 //   _id: "666a8b4090d43541f89bb1ee",
 //   name: "Sohan",
@@ -81,19 +82,36 @@ const Profile = () => {
     }
 
     fetchProfileData(email);
-  })
+  }, [email])
 
 
   return (
 
     <Box sx={{ padding: 4 }}>
-      <Card sx={{ maxWidth: 800, margin: '0 auto', padding: 3, backgroundColor: '#f9f9f9' }}> 
+      <Card sx={{ maxWidth: 800, margin: '0 auto', padding: 3, backgroundColor: '#f9f9f9' }}>
         <CardContent>
-            <Typography variant="h4" sx={{textAlign : "center"}} gutterBottom>Profile</Typography>
+          <Typography variant="h4" sx={{ textAlign: "center" }} gutterBottom>Profile</Typography>
           <Grid container spacing={3}>
 
             <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center' }}>
-
+              <Input
+                type="file"
+                endAdornment={
+                  <InputAdornment position="end">
+                    <label htmlFor="icon-button-file">
+                      <Button
+                        variant="contained"
+                        component="span"
+                        startIcon={<MdPhotoCamera />}
+                      >
+                        Upload
+                      </Button>
+                    </label>
+                  </InputAdornment>
+                }
+                style={{ display: 'none' }} // Hides the original input, but still functional
+                id="icon-button-file"
+              />
               <Avatar sx={{ width: 120, height: 120 }}>
 
                 <AccountCircleIcon sx={{ fontSize: 100 }} />
