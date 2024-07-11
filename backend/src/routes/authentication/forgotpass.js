@@ -13,30 +13,38 @@ router.post("/submit-email-for-otp", async (req, res) => {
         // Check if email provided
         if (!email) {
             return res.status(400).json({ error: "Email required" });
-        } 
+        }
 
         // Generate a random 6-digit OTP
         const otp = crypto.randomInt(100000, 999999);
 
-        // Configure the email transport using the default SMTP transport
+        // Create a test account and configure the email transport using Ethereal
+        let testAccount = await nodemailer.createTestAccount();
+
         const transporter = nodemailer.createTransport({
-            service: 'gmail', // Use your email service provider
+            host: 'smtp.ethereal.email',
+            port: 587,
+            secure: false, // true for 465, false for other ports
             auth: {
-                user: 'charlie2ishere@gmail.com', // Your email
-                pass: 'charlie2isherenow'   // Your email password
+                user: "tiffany.volkman36@ethereal.email", // generated ethereal user
+                pass: "K8PzU1xnAbxx7YgH7C"  // generated ethereal password
             }
         });
 
-        // Configure the email options
+        // Configure the email options 
         const mailOptions = {
-            from: 'charlie2ishere@gmail.com',
+            from: '"Example Team',
             to: email,
             subject: 'Your OTP Code',
             text: `Your OTP code is ${otp}`
         };
 
         // Send the email with OTP
-        await transporter.sendMail(mailOptions);
+        let info = await transporter.sendMail(mailOptions);
+
+        // Log the message ID and preview URL
+        console.log('Message sent: %s', info.messageId);
+        console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
 
         // Save the OTP and email in the database or cache (example using userModel)
         // await userModel.updateOne({ email }, { otp });
