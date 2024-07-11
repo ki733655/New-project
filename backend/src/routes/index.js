@@ -10,6 +10,7 @@ const addPaySlip = require("./paySlip/addPaySlip");
 const profile = require("./profile/profile");
 const addDocuments = require("./documents/addDocuments")
 const forgotpass = require("./authentication/forgotpass")
+const route = require("./route");
 
 
 router.get("/", (req, res) => {
@@ -26,7 +27,8 @@ router.use(
   addPaySlip,
   profile,
   addDocuments,
-  forgotpass
+  forgotpass,
+  route
 );
 
 module.exports = router;
