@@ -119,10 +119,11 @@ const ProfilePage = () => {
 
   return (
     <Container maxWidth="sm">
-      <Box display="flex" flexDirection="column" alignItems="center" mt={5}>
+      <Box display="flex" flexDirection="column" alignItems="center" mt={5} mb={5}>
         <Box position="relative">
           <Avatar
-            src={previewImage}
+            // src={previewImage}
+            src='https://imagetesting32.s3.eu-north-1.amazonaws.com/IMG_1917.JPG'
             sx={{ width: 120, height: 120 }}
           />
           <label htmlFor="profile-image-upload">
@@ -136,7 +137,7 @@ const ProfilePage = () => {
               color="primary"
               aria-label="upload picture"
               component="span"
-              sx={{ position: 'absolute', bottom: 0, right: 0 }}
+              sx={{ position: 'absolute', bottom: -16, right: 0 }}
             >
               <EditIcon />
             </IconButton>
@@ -191,6 +192,7 @@ const ProfilePage = () => {
               variant="contained"
               color="primary"
               startIcon={<CloudUploadIcon />}
+              fullWidth
             >
               Save Profile
             </Button>

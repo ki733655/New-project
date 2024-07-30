@@ -27,6 +27,7 @@ const Dashboard = () => {
   const [showDiv, setShowDiv] = useState(false); // New state for showing the div
   const [inTime, setInTime] = useState(''); // State for inTime
   const [outTime, setOutTime] = useState(''); // State for outTime
+  const [divPosition, setDivPosition] = useState({ top: 0, left: 0 }); // State for div position
 
   // Fetch user name and table data on component mount
   useEffect(() => {
@@ -79,7 +80,9 @@ const Dashboard = () => {
   };
 
   // Toggle div visibility and set inTime and outTime
-  const handleShowDiv = (inTime, outTime) => {
+  const handleShowDiv = (event, inTime, outTime) => {
+    const buttonPosition = event.currentTarget.getBoundingClientRect();
+    setDivPosition({ top: buttonPosition.top + window.scrollY, left: buttonPosition.left + window.scrollX });
     setInTime(inTime);
     setOutTime(outTime);
     setShowDiv(!showDiv);
@@ -119,7 +122,7 @@ const Dashboard = () => {
                   <TableCell>{data.select}</TableCell>
                   <TableCell>{data.empId}</TableCell>
                   <TableCell>
-                    <Button onClick={() => handleShowDiv(data.inTime, data.outTime)}>Show</Button>
+                    <Button onClick={(event) => handleShowDiv(event, data.inTime, data.outTime)}>Show</Button>
                   </TableCell>
                   <TableCell>
                     {/* Buttons for editing and deleting data */}
@@ -136,7 +139,8 @@ const Dashboard = () => {
 
       {/* Render div if showDiv is true */}
       {showDiv && (
-        <div className="h-[70vh] w-[35vw] border-black absolute top-[20vh] left-[34vw]" style={{ display: "flex", justifyContent: "space-evenly", padding: "2vh", backgroundColor: "#fafcfb", boxShadow: "0 8px 12px rgba(0, 0, 0, 0.2), 0 4px 6px rgba(0, 0, 0, 0.15)" }}>
+        <div className="h-[70vh] w-[35vw] border-black absolute" style={{ 
+          top: `${divPosition.top}px`,left: "30vw", display: "flex", justifyContent: "space-evenly", padding: "2vh", backgroundColor: "#fafcfb", boxShadow: "0 8px 12px rgba(0, 0, 0, 0.2), 0 4px 6px rgba(0, 0, 0, 0.15)" }}>
           <div className='mt-4'>
             <h2 style={{ fontSize: "1.8rem", color: "skyblue", fontFamily: "cursive", marginBottom: "2vh" }}>Intime :</h2>
             {inTime.slice().reverse().map((time, index) => ( // Using slice() to create a copy and then reverse()
