@@ -1,5 +1,5 @@
 import React from 'react'
-import AttendanceForm from '../components/Dashboard-admin/AttendanceForm'
+import AttendanceForm from '@/components/Dashboard-admin/AttendanceForm'
 
 const page = () => {
   return (

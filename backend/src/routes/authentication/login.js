@@ -1,34 +1,59 @@
 const express = require("express");
 const router = express.Router();
-// const userModel = require("../../models/user");
-const userModel = require("../../models/user")
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const User = require("../../models/user");
+const { JWT_SECRET } = require("./config");
 
-router.post("/login-form", async (req, res) => {
-    try {
-        // Extract email and password from request body
-        const { email, password } = req.body;
+router.post("/login", async (req, res) => {
+  const { email, password } = req.body;
 
-        // Check if email and password are provided
-        if (!email || !password) {
-            return res.status(400).json({ error: "Email and password are required" });
-        } 
-      
-        // Find user by email and password in the database
-        const user = await userModel.findOne({ email, password });
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(401).json({ message: "Invalid credentials" });
 
-        // If user not found, return authentication error
-        if (!user) {
-            return res.status(401).json({ error: "Invalid email or password" });
-        }
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
 
+    // Create JWT Token
+    const token = jwt.sign(
+      { id: user._id, email: user.email, role: user.role },
+      JWT_SECRET,
+      { expiresIn: "7d" }
+    );
 
-        // If user found, you can handle successful login here
-        // For now, let's just send back the user data
-        res.status(200).json(user);
-    } catch (error) {
-        console.error("Login failed:", error);
-        res.status(500).json({ error: "Internal server error" });
-    }
+    // Send token + user info
+    res.status(200).json({
+      message: "Login successful",
+      token,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Me route (securely fetch role)
+router.get("/me", async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ message: "No token" });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id).select("-password");
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    res.json({ role: user.role, email: user.email });
+    console.log(user.role);
+  } catch (err) {
+    res.status(401).json({ message: "Invalid token" });
+  }
 });
 
 module.exports = router;

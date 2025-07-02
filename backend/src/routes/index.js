@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const register_user = require("./authentication/register_user");
 const login = require("./authentication/login");
 const showTableuser = require("./dashboard/showTableuser");
 const addTableuser = require("./dashboard/addTableuser");
@@ -18,6 +19,7 @@ router.get("/", (req, res) => {
 });
 
 router.use(
+  register_user,
   login,
   showTableuser,
   addTableuser,

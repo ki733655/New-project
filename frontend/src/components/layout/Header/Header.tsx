@@ -152,14 +152,13 @@ export default function MainLayout({ children }) {
                 borderRadius: '8px',
                 boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
               },
-            }} 
+            }}
           >
-            <Link href="/myProfile" passHref>
-              <MenuItem sx={{ padding: '10px 20px' }}>
-                <CgProfile className='mr-4 text-[20px]' />
-                <Typography variant="body1">Profile</Typography>
-              </MenuItem>
-            </Link>
+            <MenuItem component={Link} href="/myProfile" sx={{ padding: '10px 20px' }}>
+              <CgProfile className='mr-4 text-[20px]' />
+              <Typography variant="body1">Profile</Typography>
+            </MenuItem>
+
           </Menu>
         </Toolbar>
       </AppBar>
@@ -185,16 +184,12 @@ export default function MainLayout({ children }) {
         <Divider />
         <List>
           {items.map((item) => (
-            <Link href={item.url} key={item.text} passHref>
-              <ListItem disablePadding>
-                <ListItemButton component="a">
-                  <ListItemIcon>
-                    {item.icon}
-                  </ListItemIcon>
-                  <ListItemText primary={item.text} />
-                </ListItemButton>
-              </ListItem>
-            </Link>
+            <ListItem disablePadding key={item.text}>
+              <ListItemButton component={Link} href={item.url}>
+                <ListItemIcon>{item.icon}</ListItemIcon>
+                <ListItemText primary={item.text} />
+              </ListItemButton>
+            </ListItem>
           ))}
         </List>
       </Drawer>

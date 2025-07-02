@@ -1,5 +1,5 @@
 import React from 'react'
-import Setting from '../components/Drawer/Setting/Setting'
+import Setting from '@/components/Drawer/Setting/Setting'
 
 const page = () => {
   return (

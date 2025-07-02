@@ -1,0 +1,120 @@
+"use client";
+import React, { useEffect, useState } from "react";
+import Cookies from "js-cookie";
+import jwtDecode from "jwt-decode";
+import { useRouter } from "next/navigation";
+import { FaTasks, FaUser, FaSignOutAlt } from "react-icons/fa";
+import { ImSpinner4 } from "react-icons/im";
+
+const DashboardUser2 = () => {
+  const router = useRouter();
+  // const [user, setUser] = useState(null);
+  // const [loading, setLoading] = useState(true);
+
+  // useEffect(() => {
+  //   const token = Cookies.get("token");
+  //   if (token) {
+  //     try {
+  //       const decoded = jwtDecode(token);
+  //       setUser(decoded);
+  //       setLoading(false);
+  //     } catch (error) {
+  //       console.error("Invalid token:", error);
+  //       localStorage.removeItem("token");
+  //       router.push("/login");
+  //     }
+  //   } else {
+  //     router.push("/login");
+  //   }
+  // }, []);
+
+  const handleLogout = () => {
+    Cookies.remove("token");
+    router.push("/login");
+  };
+
+  // if (loading) {
+  //   return (
+  //     <div className="min-h-screen flex items-center justify-center text-2xl">
+  //       <ImSpinner4 className="animate-spin mr-2" />
+  //       Loading your dashboard...
+  //     </div>
+  //   );
+  // }
+
+  return (
+    <div className="min-h-screen bg-gray-100 p-6">
+      <div className="max-w-5xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="bg-white p-6 rounded-2xl shadow-md flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold">
+              Welcome, aiyan  👋
+            </h1>
+            <p className="text-gray-600 text-sm">Role: user </p>
+          </div>
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg"
+          >
+            <FaSignOutAlt />
+            Logout
+          </button>
+        </div>
+
+        {/* Profile Card */}
+        <div className="bg-white p-6 rounded-2xl shadow-md flex items-center gap-4">
+          <img
+            src={`https://ui-avatars.com/api/?name=${"aiyan" || "User"}`}
+            alt="Avatar"
+            className="w-20 h-20 rounded-full border"
+          />
+          <div>
+            <p className="text-xl font-semibold">
+              "AnonymousUser"
+            </p>
+            <p className="text-gray-600">adffdf@gmail</p>
+          </div>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="bg-blue-100 p-4 rounded-xl flex items-center gap-4">
+            <FaTasks className="text-blue-600 text-3xl" />
+            <div>
+              <p className="text-sm text-gray-500">Tasks Completed</p>
+              <p className="text-xl font-bold">12</p>
+            </div>
+          </div>
+          <div className="bg-green-100 p-4 rounded-xl flex items-center gap-4">
+            <FaUser className="text-green-600 text-3xl" />
+            <div>
+              <p className="text-sm text-gray-500">Profile Visits</p>
+              <p className="text-xl font-bold">27</p>
+            </div>
+          </div>
+          <div className="bg-yellow-100 p-4 rounded-xl flex items-center gap-4">
+            <FaTasks className="text-yellow-600 text-3xl" />
+            <div>
+              <p className="text-sm text-gray-500">Active Projects</p>
+              <p className="text-xl font-bold">3</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Activity Section */}
+        <div className="bg-white p-6 rounded-2xl shadow-md">
+          <h2 className="text-xl font-bold mb-4">Recent Activity</h2>
+          <ul className="space-y-2 text-gray-700 list-disc list-inside">
+            <li>Logged in from IP 192.168.0.1</li>
+            <li>Updated profile information</li>
+            <li>Viewed project dashboard</li>
+            <li>Downloaded report</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default DashboardUser2;

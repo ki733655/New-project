@@ -5,6 +5,8 @@ const cors = require("cors");
 const port = 4000;
 const indexRoute = require("./src/routes/index");
 const  mongoose  = require("mongoose");
+require("dotenv").config();
+
 
 // connection to database
  const connectionToDatabase = () => {

@@ -7,7 +7,7 @@ import { MdDelete } from "react-icons/md";
 import { FaEdit } from "react-icons/fa";
 import Link from 'next/link';
 import EditAttendance from './EditAttendance';
-import { fetchData } from '@/app/api/lib/tabledata';
+import { fetchData } from '@/app/api/lib/tabledata'; 
 import { Box } from '@mui/material';
 import { MdOutlineCancel } from "react-icons/md";
 

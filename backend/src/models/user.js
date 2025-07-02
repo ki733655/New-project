@@ -1,19 +1,43 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
-  img : String,
-  name: String,
-  email: String,
-  password: String,
+  img: String,
+  name: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    lowercase: true,
+  },
+
+  password: {
+    type: String,
+    required: true,
+  },
+
+  role: {
+    type: String,
+    enum: ["admin", "user"], // either 'admin' or 'user'
+    default: "user",
+  },
+
   select: String,
-  empId: String,
-  bio : String,
+ empId: {
+    type: String,
+    unique: true,
+  },
+  bio: String,
   inTime: [String],
   outTime: [String],
   assets: {
     name: String,
     model: String,
-  },  
+  },
   documents: [
     {
       adhaarCard: String,
@@ -24,7 +48,7 @@ const userSchema = new mongoose.Schema({
     { experienceLetter: String },
     {
       bankDetails: {
-        accountNumber: String, 
+        accountNumber: String,
         cifNumber: String,
         ifscCode: String,
         firstName: String,

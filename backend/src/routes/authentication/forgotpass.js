@@ -7,46 +7,35 @@ const userModel = require("../../models/user");
 
 router.post("/submit-email-for-otp", async (req, res) => {
     try {
-        // Extract email from request body
         const { email } = req.body;
 
-        // Check if email provided
         if (!email) {
             return res.status(400).json({ error: "Email required" });
         }
 
-        // Generate a random 6-digit OTP
         const otp = crypto.randomInt(100000, 999999);
 
-        // Create a test account and configure the email transport using Ethereal
-        let testAccount = await nodemailer.createTestAccount();
-
+        // Configure the email transport using a real SMTP server (e.g., Gmail)
         const transporter = nodemailer.createTransport({
-            host: 'smtp.ethereal.email',
-            port: 587,
-            secure: false, // true for 465, false for other ports
+            service: 'gmail', // You can also use other services like 'SendGrid'
             auth: {
-                user: "tiffany.volkman36@ethereal.email", // generated ethereal user
-                pass: "K8PzU1xnAbxx7YgH7C"  // generated ethereal password
+                user: 'charlie2ishere@gmail.com', // Replace with your actual email
+                pass: 'Charlie2ishere@09/12'  // Replace with your actual password
             }
         });
 
-        // Configure the email options 
         const mailOptions = {
-            from: '"Example Team',
-            to: email,
-            subject: 'Your OTP Code',
-            text: `Your OTP code is ${otp}`
+            from: '"Example Team" <your-email@gmail.com>', // Sender address
+            to: email, // List of receivers
+            subject: 'Your OTP Code', // Subject line
+            text: `Your OTP code is ${otp}` // Plain text body
         };
 
-        // Send the email with OTP
         let info = await transporter.sendMail(mailOptions);
 
-        // Log the message ID and preview URL
         console.log('Message sent: %s', info.messageId);
-        console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
 
-        // Save the OTP and email in the database or cache (example using userModel)
+        // Save the OTP and email in the database or cache
         // await userModel.updateOne({ email }, { otp });
 
         res.status(200).json({ message: "OTP sent successfully" });
