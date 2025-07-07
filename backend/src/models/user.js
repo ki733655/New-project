@@ -31,36 +31,8 @@ const userSchema = new mongoose.Schema({
     type: String,
     unique: true,
   },
-  bio: String,
-  inTime: [String],
-  outTime: [String],
-  assets: {
-    name: String,
-    model: String,
-  },
-  documents: [
-    {
-      adhaarCard: String,
-    },
-    { panCard: String },
-    { drivingLicense: String },
-    { passport: String },
-    { experienceLetter: String },
-    {
-      bankDetails: {
-        accountNumber: String,
-        cifNumber: String,
-        ifscCode: String,
-        firstName: String,
-        middleName: String,
-        lastName: String,
-        address: String,
-        pinCode: String,
-      },
-    },
-  ],
 });
 
-const userModel = new mongoose.model("user", userSchema);
+const User = new mongoose.model("user", userSchema);
 
-module.exports = userModel;
+module.exports = User;

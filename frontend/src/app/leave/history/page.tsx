@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { CSVLink } from "react-csv";
 
 const dummyLeaveData = [
   {
@@ -33,10 +34,28 @@ const LeaveHistoryPage = () => {
     setLeaves(dummyLeaveData);
   }, []);
 
+  const csvHeaders = [
+    { label: "Type", key: "type" },
+    { label: "From", key: "from" },
+    { label: "To", key: "to" },
+    { label: "Reason", key: "reason" },
+    { label: "Status", key: "status" },
+  ];
+
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-md">
-        <h1 className="text-2xl font-bold mb-4">📄 Leave History</h1>
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-2xl font-bold">📄 Leave History</h1>
+          <CSVLink
+            data={leaves}
+            headers={csvHeaders}
+            filename="leave-history.csv"
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          >
+            Export CSV
+          </CSVLink>
+        </div>
 
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm text-left border">
