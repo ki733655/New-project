@@ -80,7 +80,7 @@ const items = [
   { text: 'Home', icon: <PersonIcon />, url: '/dashboard-user' },
   { text: 'Profile', icon: <PersonIcon />, url: '/profile' },
   { text: 'Documents', icon: <DescriptionIcon />, url: '/documents' },
-  { text: 'Pay Slip', icon: <PaymentIcon />, url: '/paySlip' },
+  { text: 'Attendance', icon: <PaymentIcon />, url: '/admin/attendance' },
   { text: 'Setting', icon: <SettingsIcon />, url: '/setting' },
 ];
 

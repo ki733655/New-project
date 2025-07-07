@@ -22,6 +22,17 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+// calendar 
+import 'react-calendar/dist/Calendar.css';
+import Calendar from "react-calendar";
+
+const attendanceRecords = {
+  "2025-07-01": "Present",
+  "2025-07-02": "Absent",
+  "2025-07-03": "Present",
+  "2025-07-04": "Half-day",
+};
+
 
 
 
@@ -31,6 +42,23 @@ const DashboardUser2 = () => {
   const [loading, setLoading] = useState(true);
   const [attendanceStatus, setAttendanceStatus] = useState(null);
   const [isClockedIn, setIsClockedIn] = useState(false);
+  // calendar
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const getStatus = (date) => {
+    const formatted = date.toISOString().split("T")[0];
+    return attendanceRecords[formatted];
+  };
+
+  const tileClassName = ({ date, view }) => {
+    if (view === "month") {
+      const status = getStatus(date);
+      if (status === "Present") return 'react-calendar__tile--present';
+      if (status === "Absent") return 'react-calendar__tile--absent';
+      if (status === "Half-day") return 'react-calendar__tile--halfday';
+    }
+    return null;
+  };
+
 
   useEffect(() => {
     const token = Cookies.get("token");
@@ -99,6 +127,15 @@ const DashboardUser2 = () => {
     { name: "Absent", value: 1 },
     { name: "Leave", value: 1 },
   ];
+
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+
+
 
   const COLORS = ["#34D399", "#F87171", "#FBBF24"]; // green, red, yellow
 
@@ -183,14 +220,9 @@ const DashboardUser2 = () => {
                 onClick={() => router.push("/attendance/history")}
                 className="mt-2 px-4 py-1 bg-green-500 text-white rounded-md"
               >
-                View Attendance
+                View Attendance history
               </button>
-              <button
-                onClick={() => router.push("/leave/history")}
-                className="mt-2 px-4 py-1 bg-purple-600 text-white rounded-md"
-              >
-                View Leave History
-              </button>
+
 
             </div>
 
@@ -205,6 +237,12 @@ const DashboardUser2 = () => {
                 className="mt-2 px-4 py-1 bg-yellow-500 text-white rounded-md">
                 Apply for Leave
               </button>
+              <button
+                onClick={() => router.push("/leave/history")}
+                className="mt-2 px-4 py-1 bg-purple-600 text-white rounded-md"
+              >
+                View Leave History
+              </button>
             </div>
           </div>
 
@@ -217,34 +255,64 @@ const DashboardUser2 = () => {
               <li>Applied for leave on 27 June</li>
             </ul>
           </div>
-          {/* Weekly Summary Chart */}
+
+          {/* pie chart and calendar section  */}
           <div className="bg-white p-6 rounded-2xl shadow-md">
-            <h2 className="text-xl font-bold mb-4">📊 Weekly Attendance Summary</h2>
-            <div className="w-full h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={weeklySummaryData}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={90}
-                    label
-                  >
-                    {weeklySummaryData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={COLORS[index % COLORS.length]}
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
+            <h2 className="text-xl font-bold mb-4">📅 Attendance Overview</h2>
+            <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+              {isClient && (
+                <>
+
+                  {/* Pie Chart */}
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={weeklySummaryData}
+                          dataKey="value"
+                          nameKey="name"
+                          cx="50%"
+                          cy="50%"
+                          outerRadius={90}
+                          label
+                        >
+                          {weeklySummaryData.map((entry, index) => (
+                            <Cell
+                              key={`cell-${index}`}
+                              fill={COLORS[index % COLORS.length]}
+                            />
+                          ))}
+                        </Pie>
+                        <Tooltip />
+                        <Legend />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  {/* Calendar */}
+                  <div className="bg-gray-50 p-4 rounded-xl shadow-inner border">
+                    <Calendar
+                      onChange={setSelectedDate}
+                      value={selectedDate}
+                      tileClassName={tileClassName}
+                      className="rounded-lg border border-gray-200 w-full"
+                    />
+                    <p className="mt-4 text-sm text-gray-600">
+                      Selected Date: <strong>{selectedDate.toDateString()}</strong><br />
+                      Status:{" "}
+                      <span className="font-semibold">
+                        {getStatus(selectedDate) || "No data"}
+                      </span>
+                    </p>
+                  </div>
+                </>
+              )}
+
+
             </div>
           </div>
+
+
         </div>
       </div>
     </>

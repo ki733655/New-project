@@ -1,17 +1,19 @@
 const express = require("express");
 const router = express.Router();
-const register_user = require("./authentication/register_user");
-const login = require("./authentication/login");
-const showTableuser = require("./dashboard/showTableuser");
-const addTableuser = require("./dashboard/addTableuser");
-const deleteTableuser = require("./dashboard/deleteTableuser");
-const editTableuser = require("./dashboard/editTableuser");
-const attendance = require("./dashboard/calendar/attendance");
-const addPaySlip = require("./paySlip/addPaySlip");
-const profile = require("./profile/profile");
-const addDocuments = require("./documents/addDocuments")
-const forgotpass = require("./authentication/forgotpass")
-const route = require("./route");
+// const register_user = require("./authentication/register_user");
+// const login = require("./authentication/login");
+// const showTableuser = require("./dashboard/showTableuser");
+// const addTableuser = require("./dashboard/addTableuser");
+// const deleteTableuser = require("./dashboard/deleteTableuser");
+// const editTableuser = require("./dashboard/editTableuser");
+// const attendance = require("./dashboard/calendar/attendance");
+// const addPaySlip = require("./paySlip/addPaySlip");
+// const profile = require("./profile/profile");
+// const addDocuments = require("./documents/addDocuments")
+// const forgotpass = require("./authentication/forgotpass")
+// const route = require("./route");
+const authroutes = require("./authentication/authroutes");
+const attendanceRoute = require("./attendance/attendanceRoutes");
 
 
 router.get("/", (req, res) => {
@@ -19,18 +21,20 @@ router.get("/", (req, res) => {
 });
 
 router.use(
-  register_user,
-  login,
-  showTableuser,
-  addTableuser,
-  deleteTableuser,
-  editTableuser,
-  attendance,
-  addPaySlip,
-  profile,
-  addDocuments,
-  forgotpass,
-  route
+  authroutes,
+  attendanceRoute
+  // register_user,
+  // login,
+  // showTableuser,
+  // addTableuser,
+  // deleteTableuser,
+  // editTableuser,
+  // attendance,
+  // addPaySlip,
+  // profile,
+  // addDocuments,
+  // forgotpass,
+  // route
 );
 
 module.exports = router;

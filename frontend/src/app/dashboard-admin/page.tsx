@@ -1,11 +1,11 @@
 
 import React from 'react'
-import Dashboard from '@/components/Dashboard-admin/Dashboard'
+import DashboardAdmin from '@/components/Dashboard-admin/DashboardAdmin'
 
 const page = () => {
   return (
     <div>
-        <Dashboard/>
+        <DashboardAdmin/>
     </div>
   )
 }
