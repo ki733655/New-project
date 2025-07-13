@@ -17,30 +17,29 @@ const Login = () => {
     setData((prev) => ({ ...prev, [id]: value }));
   };
 
-  const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post("http://localhost:4000/login", data);
-      Cookies.set("token", response.data.token, { expires: 7 });
-
-      // ✅ Securely fetch role
-      const res = await axios.get("http://localhost:4000/me", {
-        headers: {
-          Authorization: `Bearer ${response.data.token}`,
-        },
+      const res = await axios.post("http://localhost:4000/login", data, {
+        withCredentials: true,
       });
 
-      const { role } = res.data;
-      if (role === "admin") router.push("/dashboard-admin");
-      else router.push("/dashboard-user");
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+      console.log(localStorage.getItem("user"));
 
-    } catch (error) {
-      alert(error.response?.data?.message || "Login failed");
+      if (res.data.user.role === "admin") {
+        router.push("/dashboard-admin");
+      } else {
+        router.push("/dashboard-user");
+      }
+
+    } catch (err) {
+      alert(err.response?.data?.message || "Login failed");
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   // ✅ Check auth on mount securely
   // useEffect(() => {

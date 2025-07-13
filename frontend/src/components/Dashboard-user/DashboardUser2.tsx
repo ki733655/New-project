@@ -41,7 +41,10 @@ const DashboardUser2 = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [attendanceStatus, setAttendanceStatus] = useState(null);
+  // to track clocked in or not 
   const [isClockedIn, setIsClockedIn] = useState(false);
+  // to track clocked out or not
+  const [hasClockedOut, setHasClockedOut] = useState(false);
   // calendar
   const [selectedDate, setSelectedDate] = useState(new Date());
   const getStatus = (date) => {
@@ -61,21 +64,48 @@ const DashboardUser2 = () => {
 
 
   useEffect(() => {
-    const token = Cookies.get("token");
-    if (token) {
-      try {
-        const decoded = jwtDecode(token);
-        setUser(decoded);
-        setLoading(false);
-        fetchTodayAttendance(decoded.id);
-      } catch (error) {
-        console.error("Invalid token:", error);
-        Cookies.remove("token");
-        router.push("/login");
-      }
-    } else {
-      router.push("/login");
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setLoading(false);
     }
+
+    if (!storedUser) return router.push("/login");
+
+    const userObj = JSON.parse(storedUser);
+    setUser(userObj);
+
+    // fethcing attendance 
+    const fetchTodayAttendance = async () => {
+      try {
+        const res = await axios.get("http://localhost:4000/today", {
+          withCredentials: true, // 🔒 send cookies
+        });
+
+        if (res.data) {
+          const { checkIn, checkOut } = res.data;
+
+          if (checkIn && checkOut) {
+            setIsClockedIn(true);
+            setHasClockedOut(true);                 // No clock in/out anymore
+            setAttendanceStatus("Completed");      // Fully marked
+          } else if (checkIn && !checkOut) {
+            setIsClockedIn(true);
+            setHasClockedOut(false);                 // Show Clock Out
+            setAttendanceStatus("Present");
+          } else if (!checkIn && !checkOut) {
+            setIsClockedIn(false);
+            setHasClockedOut(false);                 // Show Clock In
+            setAttendanceStatus("Not Marked");
+          }
+        }
+
+      } catch (err) {
+        console.error("Failed to fetch today's attendance:", err);
+        setAttendanceStatus("Error");
+      }
+    };
+
+    fetchTodayAttendance();
   }, []);
 
   const fetchTodayAttendance = async (userId) => {
@@ -91,11 +121,16 @@ const DashboardUser2 = () => {
       console.error("Failed to fetch attendance:", err);
     }
   };
-
   const handleClockIn = async () => {
     try {
-      await axios.post("/api/attendance/mark", { type: "checkin" });
+      await axios.post(
+        "http://localhost:4000/mark",
+        { type: "checkin" },
+        { withCredentials: true }
+      );
+
       setIsClockedIn(true);
+      setHasClockedOut(false);
       setAttendanceStatus("Present");
       toast.success("✅ Clocked in successfully!");
     } catch (err) {
@@ -104,10 +139,17 @@ const DashboardUser2 = () => {
     }
   };
 
+
   const handleClockOut = async () => {
     try {
-      await axios.post("/api/attendance/mark", { type: "checkout" });
-      setIsClockedIn(false);
+      await axios.post(
+        "http://localhost:4000/mark", // same as clock-in
+        { type: "checkout" },
+        { withCredentials: true }
+      );
+
+      setIsClockedIn(false); // user is now clocked out
+      setHasClockedOut(true);
       toast.success("✅ Clocked out successfully!");
     } catch (err) {
       toast.error("❌ Failed to clock out.");
@@ -116,10 +158,16 @@ const DashboardUser2 = () => {
   };
 
 
-  const handleLogout = () => {
-    Cookies.remove("token");
-    router.push("/login");
+  const handleLogout = async () => {
+    try {
+      await axios.post("http://localhost:4000/logout", {}, { withCredentials: true });
+      router.push("/login");
+    } catch (err) {
+      console.error("Logout failed", err);
+      toast.error("Logout failed.");
+    }
   };
+
 
   // dummy data for chart 
   const weeklySummaryData = [
@@ -195,21 +243,28 @@ const DashboardUser2 = () => {
               <FaClock className="text-blue-600 text-3xl" />
               <p className="text-sm text-gray-500">Today's Status</p>
               <p className="text-xl font-bold">{attendanceStatus}</p>
-              {!isClockedIn ? (
+              {!isClockedIn && !hasClockedOut ? (
                 <button
                   onClick={handleClockIn}
                   className="mt-2 px-4 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-md"
                 >
                   Clock In
                 </button>
-              ) : (
+              ) : isClockedIn && !hasClockedOut ? (
                 <button
                   onClick={handleClockOut}
                   className="mt-2 px-4 py-1 bg-gray-500 hover:bg-gray-600 text-white rounded-md"
                 >
                   Clock Out
                 </button>
+              ) : (
+                <p className="text-green-600 font-bold">✅ Attendance marked</p>
               )}
+
+
+
+
+
             </div>
 
             <div className="bg-green-100 p-4 rounded-xl flex flex-col items-start gap-2">
@@ -311,8 +366,6 @@ const DashboardUser2 = () => {
 
             </div>
           </div>
-
-
         </div>
       </div>
     </>
