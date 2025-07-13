@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema({
   },
 
   select: String,
- empId: {
+  empId: {
     type: String,
     unique: true,
   },

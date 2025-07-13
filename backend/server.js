@@ -6,6 +6,8 @@ const port = 4000;
 const indexRoute = require("./src/routes/index");
 const  mongoose  = require("mongoose");
 require("dotenv").config();
+const cookieParser = require("cookie-parser");
+
 
 
 // connection to database
@@ -22,8 +24,13 @@ connectionToDatabase();
 
 
 // Middleware to parse JSON bodies
-app.use(cors())
+app.use(cors({
+  origin: "http://localhost:3000", // frontend origin
+  credentials: true,              // allow cookies
+}));
+
 app.use(express.json());
+app.use(cookieParser());
 app.use(indexRoute);
 // app.use(cors({
 //     origin: 'http://localhost:3000', // Update to your frontend URL
