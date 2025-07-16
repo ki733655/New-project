@@ -47,6 +47,8 @@ const DashboardUser2 = () => {
   const [hasClockedOut, setHasClockedOut] = useState(false);
   // calendar
   const [selectedDate, setSelectedDate] = useState(new Date());
+  // to store the attendance count
+  const [attendanceCount,  setAttendanceCount] = useState(null);
   const getStatus = (date) => {
     const formatted = date.toISOString().split("T")[0];
     return attendanceRecords[formatted];
@@ -77,7 +79,7 @@ const DashboardUser2 = () => {
     // fethcing attendance 
     const fetchTodayAttendance = async () => {
       try {
-        const res = await axios.get("http://localhost:4000/today", {
+        const res = await axios.get("http://localhost:4000/attendance/today", {
           withCredentials: true, // 🔒 send cookies
         });
 
@@ -106,6 +108,22 @@ const DashboardUser2 = () => {
     };
 
     fetchTodayAttendance();
+
+    // fetchallattendance 
+    // const fetchAttendanceCount = async () => {
+    //   try{
+    //       const res = await axios.get("http://localhost:4000/attendance/today/count" , {
+    //         withCredentials : true,
+    //       });
+
+    //       setAttendanceCount(res.data.count);
+
+    //   }catch(err){
+    //     console.error("Failed to fetch today's attendance count:", err);
+    //     alert("falied to fetch todays attendance count");
+    //   }
+    // }
+    // fetchAttendanceCount();
   }, []);
 
   const fetchTodayAttendance = async (userId) => {
@@ -124,7 +142,7 @@ const DashboardUser2 = () => {
   const handleClockIn = async () => {
     try {
       await axios.post(
-        "http://localhost:4000/mark",
+        "http://localhost:4000/attendance/mark",
         { type: "checkin" },
         { withCredentials: true }
       );
@@ -143,7 +161,7 @@ const DashboardUser2 = () => {
   const handleClockOut = async () => {
     try {
       await axios.post(
-        "http://localhost:4000/mark", // same as clock-in
+        "http://localhost:4000/attendance/mark", // same as clock-in
         { type: "checkout" },
         { withCredentials: true }
       );
@@ -207,11 +225,18 @@ const DashboardUser2 = () => {
         <div className="max-w-5xl mx-auto space-y-6">
           {/* Header */}
           <div className="bg-white p-6 rounded-2xl shadow-md flex justify-between items-center">
-            <div>
-              <h1 className="text-2xl font-bold">
-                Welcome, {user.name || "User"} 👋
-              </h1>
-              <p className="text-gray-600 text-sm">Role: {user.role}</p>
+            <div className="flex justify-between items-center">
+              <img
+              src={`https://ui-avatars.com/api/?name=${user.name || "User"}`}
+              alt="Avatar"
+              className="w-20 h-20 rounded-full border"
+            />
+            <div className="ml-4">
+              <p className="text-xl font-semibold">{user.name}</p>
+              <p className="text-gray-600 flex items-center gap-2">
+                <FaEnvelope /> {user.email}
+              </p>
+            </div>       
             </div>
             <button
               onClick={handleLogout}
@@ -220,21 +245,6 @@ const DashboardUser2 = () => {
               <FaSignOutAlt />
               Logout
             </button>
-          </div>
-
-          {/* Profile Card */}
-          <div className="bg-white p-6 rounded-2xl shadow-md flex items-center gap-4">
-            <img
-              src={`https://ui-avatars.com/api/?name=${user.name || "User"}`}
-              alt="Avatar"
-              className="w-20 h-20 rounded-full border"
-            />
-            <div>
-              <p className="text-xl font-semibold">{user.name}</p>
-              <p className="text-gray-600 flex items-center gap-2">
-                <FaEnvelope /> {user.email}
-              </p>
-            </div>
           </div>
 
           {/* Main Actions */}
@@ -260,22 +270,18 @@ const DashboardUser2 = () => {
               ) : (
                 <p className="text-green-600 font-bold">✅ Attendance marked</p>
               )}
-
-
-
-
-
             </div>
+
 
             <div className="bg-green-100 p-4 rounded-xl flex flex-col items-start gap-2">
               <FaCalendarCheck className="text-green-600 text-3xl" />
-              <p className="text-sm text-gray-500">Total Presents</p>
-              <p className="text-xl font-bold">23</p>
+              <p className="text-sm text-gray-500">Click the below button to view your attendance records</p>
+              <p className="text-xl font-bold">{attendanceCount}</p>
               <button
                 onClick={() => router.push("/attendance/history")}
                 className="mt-2 px-4 py-1 bg-green-500 text-white rounded-md"
               >
-                View Attendance history
+                View Records
               </button>
 
 
@@ -299,16 +305,6 @@ const DashboardUser2 = () => {
                 View Leave History
               </button>
             </div>
-          </div>
-
-          {/* Activity Log (placeholder for now) */}
-          <div className="bg-white p-6 rounded-2xl shadow-md">
-            <h2 className="text-xl font-bold mb-4">Recent Activity</h2>
-            <ul className="space-y-2 text-gray-700 list-disc list-inside">
-              <li>Clocked in at 9:10 AM</li>
-              <li>Clocked out at 5:12 PM</li>
-              <li>Applied for leave on 27 June</li>
-            </ul>
           </div>
 
           {/* pie chart and calendar section  */}

@@ -1,11 +1,12 @@
 "use client";
+import axios from "axios";
 import React, { useState } from "react";
 
 const LeaveApplyPage = () => {
   const [leave, setLeave] = useState({
-    type: "",
-    from: "",
-    to: "",
+    leaveType: "",
+    fromDate: "",
+    toDate: "",
     reason: "",
   });
 
@@ -15,17 +16,32 @@ const LeaveApplyPage = () => {
     setLeave({ ...leave, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Simulate backend submission
-    console.log("Leave Submitted:", leave);
-    setSubmitted(true);
+    try {
+      await axios.post("http://localhost:4000/leave/apply",
+        leave,
+        { withCredentials: true },
+      );
+      setSubmitted(true);
 
-    setTimeout(() => {
-      setSubmitted(false);
-      setLeave({ type: "", from: "", to: "", reason: "" });
-    }, 3000);
+      alert("Data sent successfully");
+
+
+      setLeave({
+        leaveType: "",
+        fromDate: "",
+        toDate: "",
+        reason: "",
+      });
+
+
+    } catch (err) {
+      console.log(err);
+      alert("Error submitting leave data" + err.message);
+    }
+    console.log("Leave Submitted:", leave);
   };
 
   return (
@@ -37,16 +53,19 @@ const LeaveApplyPage = () => {
           <div>
             <label className="block text-sm font-medium">Leave Type</label>
             <select
-              name="type"
-              value={leave.type}
+              name="leaveType"
+              value={leave.leaveType}
               onChange={handleChange}
               className="w-full mt-1 p-2 border rounded-md"
               required
             >
               <option value="">-- Select Type --</option>
-              <option value="Sick Leave">Sick Leave</option>
-              <option value="Casual Leave">Casual Leave</option>
-              <option value="Earned Leave">Earned Leave</option>
+              <option value="Sick">Sick Leave</option>
+              <option value="Casual">Casual Leave</option>
+              <option value="Paid">Paid Leave</option>
+              <option value="Emergency">Emergency Leave</option>
+              <option value="Other">Other</option>
+
             </select>
           </div>
 
@@ -55,8 +74,8 @@ const LeaveApplyPage = () => {
               <label className="block text-sm font-medium">From Date</label>
               <input
                 type="date"
-                name="from"
-                value={leave.from}
+                name="fromDate"
+                value={leave.fromDate}
                 onChange={handleChange}
                 className="w-full mt-1 p-2 border rounded-md"
                 required
@@ -66,8 +85,8 @@ const LeaveApplyPage = () => {
               <label className="block text-sm font-medium">To Date</label>
               <input
                 type="date"
-                name="to"
-                value={leave.to}
+                name="toDate"
+                value={leave.toDate}
                 onChange={handleChange}
                 className="w-full mt-1 p-2 border rounded-md"
                 required
