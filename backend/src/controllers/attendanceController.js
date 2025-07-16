@@ -38,8 +38,8 @@ const markAttendance = async (req, res) => {
   }
 };
 
-
-const getTodayAttendance = async (req, res) => {
+// get user attendace for current day
+const getTodayUserAttendance = async (req, res) => {
   const  userId  = req.user._id;
   const today = new Date().toISOString().split("T")[0];
 
@@ -56,7 +56,7 @@ const getTodayAttendance = async (req, res) => {
 };
 
 // Get all attendance for a user
-const getAllAttendance = async (req, res) => {
+const getAllUserAttendance = async (req, res) => {
   try {
     // const records = await Attendance.find().sort({ date: -1 });
     const records = await Attendance.find()
@@ -71,8 +71,37 @@ const getAllAttendance = async (req, res) => {
   }
 };
 
+// get just todays count of all the user attendance
+const getTodayAttendanceCount = async (req, res) => {
+  try {
+    const today = new Date().toISOString().split("T")[0];
+
+    const count = await Attendance.countDocuments({ date: today });
+    
+    res.status(200).json({ count });
+  } catch (err) {
+    console.error("Error getting today attendance count:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+const getUserAttendanceRecords = async (req, res) => {
+  try {
+    const records = await Attendance.find({ userId: req.user._id }).sort({ date: -1 });
+    res.json(records);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+
+
+
 module.exports = {
   markAttendance,
-  getTodayAttendance,
-  getAllAttendance,
+  getTodayUserAttendance,
+  getAllUserAttendance,
+  getTodayAttendanceCount,
+  getUserAttendanceRecords
 };

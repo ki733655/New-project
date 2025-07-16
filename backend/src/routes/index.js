@@ -14,6 +14,7 @@ const router = express.Router();
 // const route = require("./route");
 const authroutes = require("./authentication/authroutes");
 const attendanceRoute = require("./attendance/attendanceRoutes");
+const leaveRoutes = require("./leave/leaveRoutes")
 
 
 router.get("/", (req, res) => {
@@ -22,7 +23,8 @@ router.get("/", (req, res) => {
 
 router.use(
   authroutes,
-  attendanceRoute
+  attendanceRoute,
+  leaveRoutes
   // register_user,
   // login,
   // showTableuser,

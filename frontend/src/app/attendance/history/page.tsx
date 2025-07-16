@@ -1,6 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { CSVLink } from "react-csv";
+import axios from "axios";
+
 
 const AttendanceHistory = () => {
   const [attendance, setAttendance] = useState([]);
@@ -9,12 +11,22 @@ const AttendanceHistory = () => {
   const user = { name: "Aiyan", email: "aiyan@gmail.com" };
 
   useEffect(() => {
-    // Simulate fetching from backend
-    setAttendance([
-      { date: "2025-07-01", checkIn: "09:10 AM", checkOut: "05:12 PM", status: "Present" },
-      { date: "2025-06-30", checkIn: "09:45 AM", checkOut: "", status: "Half-day" },
-      { date: "2025-06-29", checkIn: "", checkOut: "", status: "Absent" },
-    ]);
+
+    const fetchAttendanceRecords = async () => {
+      try {
+        const res = await axios.get("http://localhost:4000/attendance/records", {
+          withCredentials: true, // 🔒 send cookies
+        });
+
+        setAttendance(res.data);
+        console.log(res);
+
+      } catch (err) {
+        console.error("Failed to attendance records:", err);
+      }
+    };
+
+    fetchAttendanceRecords();
   }, []);
 
   // Prepare CSV export data
