@@ -11,7 +11,7 @@ const { authenticate, adminOnly } = require("../../middleware/authMiddleware");
 
 // Normal user routes
 router.post("/leave/apply", authenticate, applyLeave);
-router.get("/leave/mine", authenticate, getUserLeaves);
+router.get("/leave/user/history", authenticate, getUserLeaves);
 
 // Admin routes
 router.get("/leave/all", authenticate, adminOnly, getAllLeaves);
