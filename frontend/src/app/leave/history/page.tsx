@@ -1,38 +1,49 @@
 "use client";
+import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { CSVLink } from "react-csv";
-
-const dummyLeaveData = [
-  {
-    type: "Sick Leave",
-    from: "2025-06-20",
-    to: "2025-06-22",
-    reason: "Fever and weakness",
-    status: "Approved",
-  },
-  {
-    type: "Casual Leave",
-    from: "2025-07-01",
-    to: "2025-07-01",
-    reason: "Family event",
-    status: "Pending",
-  },
-  {
-    type: "Earned Leave",
-    from: "2025-05-05",
-    to: "2025-05-07",
-    reason: "Vacation",
-    status: "Rejected",
-  },
-];
 
 const LeaveHistoryPage = () => {
   const [leaves, setLeaves] = useState([]);
 
   useEffect(() => {
-    // Simulate API call
-    setLeaves(dummyLeaveData);
+    const fetchleavedata = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:4000/leave/user/history", // same as clock-in
+        { withCredentials: true }
+      );
+
+      setLeaves(response.data);
+
+      
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  fetchleavedata();
   }, []);
+
+  // to format the date into visually good
+  const formatDate = (isoDate: string) => {
+  const date = new Date(isoDate);
+  return date.toLocaleDateString("en-IN", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+};
+
+const csvData = leaves.map((item) => ({
+  type: item.leaveType,
+  from: formatDate(item.fromDate),
+  to: formatDate(item.toDate),
+  reason: item.reason,
+  status: item.status,
+}));
+
+
 
   const csvHeaders = [
     { label: "Type", key: "type" },
@@ -48,7 +59,7 @@ const LeaveHistoryPage = () => {
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">📄 Leave History</h1>
           <CSVLink
-            data={leaves}
+            data={csvData}
             headers={csvHeaders}
             filename="leave-history.csv"
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
@@ -71,9 +82,9 @@ const LeaveHistoryPage = () => {
             <tbody>
               {leaves.map((item, idx) => (
                 <tr key={idx} className="border-b hover:bg-gray-50">
-                  <td className="px-4 py-2">{item.type}</td>
-                  <td className="px-4 py-2">{item.from}</td>
-                  <td className="px-4 py-2">{item.to}</td>
+                  <td className="px-4 py-2">{item.leaveType}</td>
+                  <td className="px-4 py-2">{formatDate(item.fromDate)}</td>
+                  <td className="px-4 py-2">{formatDate(item.toDate)}</td>
                   <td className="px-4 py-2">{item.reason}</td>
                   <td className="px-4 py-2">
                     <span
