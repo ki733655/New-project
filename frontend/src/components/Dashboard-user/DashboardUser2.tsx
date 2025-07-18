@@ -1,7 +1,5 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/navigation";
 import {
   FaCalendarCheck,
@@ -26,15 +24,6 @@ import {
 import 'react-calendar/dist/Calendar.css';
 import Calendar from "react-calendar";
 
-const attendanceRecords = {
-  "2025-07-01": "Present",
-  "2025-07-02": "Absent",
-  "2025-07-03": "Present",
-  "2025-07-04": "Half-day",
-};
-
-
-
 
 const DashboardUser2 = () => {
   const router = useRouter();
@@ -48,11 +37,18 @@ const DashboardUser2 = () => {
   // calendar
   const [selectedDate, setSelectedDate] = useState(new Date());
   // to store the attendance count
-  const [attendanceCount,  setAttendanceCount] = useState(null);
-  const getStatus = (date) => {
-    const formatted = date.toISOString().split("T")[0];
-    return attendanceRecords[formatted];
-  };
+  const [attendanceCount, setAttendanceCount] = useState(null);
+  // to store the calendar data 
+  const [attendanceRecords, setAttendanceRecords] = useState({});
+
+ const getStatus = (date) => {
+  const formatted = date.toLocaleDateString('en-CA'); // YYYY-MM-DD in local timezone
+  return attendanceRecords[formatted];
+};
+
+
+  // to store the pie chart data
+  const [weeklySummaryData, setWeeklySummaryData] = useState([]);
 
   const tileClassName = ({ date, view }) => {
     if (view === "month") {
@@ -109,36 +105,41 @@ const DashboardUser2 = () => {
 
     fetchTodayAttendance();
 
-    // fetchallattendance 
-    // const fetchAttendanceCount = async () => {
-    //   try{
-    //       const res = await axios.get("http://localhost:4000/attendance/today/count" , {
-    //         withCredentials : true,
-    //       });
+    // fetch for the pie chart
+    const fetchSummary = async () => {
+      try {
+        const res = await axios.get("http://localhost:4000/attendance/summary", {
+          withCredentials: true,
+        });
+        console.log("Monthly Summary:", res.data);
+        setWeeklySummaryData([
+          { name: "Present", value: res.data.Present },
+          { name: "Leave", value: res.data.Leave },
+          { name: "Absent", value: res.data.Absent },
+        ]);
+      } catch (err) {
+        console.error("Failed to fetch summary:", err);
+      }
+    };
+    fetchSummary();
 
-    //       setAttendanceCount(res.data.count);
+    // fetch for the calendar
+    const fetchMonthlyAttendance = async () => {
+      try {
+        const res = await axios.get("http://localhost:4000/attendance/month/calendar", {
+          withCredentials: true,
+        });
+        setAttendanceRecords(res.data);
+      } catch (err) {
+        console.error("Failed to fetch monthly attendance:", err);
+      }
+    };
+    fetchMonthlyAttendance();
 
-    //   }catch(err){
-    //     console.error("Failed to fetch today's attendance count:", err);
-    //     alert("falied to fetch todays attendance count");
-    //   }
-    // }
-    // fetchAttendanceCount();
+
   }, []);
 
-  const fetchTodayAttendance = async (userId) => {
-    try {
-      const res = await axios.get(`/api/attendance/today/${userId}`);
-      if (res.data && res.data.checkIn) {
-        setIsClockedIn(true);
-        setAttendanceStatus("Present");
-      } else {
-        setAttendanceStatus("Not Marked");
-      }
-    } catch (err) {
-      console.error("Failed to fetch attendance:", err);
-    }
-  };
+
   const handleClockIn = async () => {
     try {
       await axios.post(
@@ -187,12 +188,6 @@ const DashboardUser2 = () => {
   };
 
 
-  // dummy data for chart 
-  const weeklySummaryData = [
-    { name: "Present", value: 5 },
-    { name: "Absent", value: 1 },
-    { name: "Leave", value: 1 },
-  ];
 
   const [isClient, setIsClient] = useState(false);
 
@@ -220,23 +215,21 @@ const DashboardUser2 = () => {
       <ToastContainer position="top-right" autoClose={3000} />
       <div className="min-h-screen bg-gray-100 p-6">
 
-
-
         <div className="max-w-5xl mx-auto space-y-6">
-          {/* Header */}
+          {/* PROFILE AND lOGOUT SECTION */}
           <div className="bg-white p-6 rounded-2xl shadow-md flex justify-between items-center">
             <div className="flex justify-between items-center">
               <img
-              src={`https://ui-avatars.com/api/?name=${user.name || "User"}`}
-              alt="Avatar"
-              className="w-20 h-20 rounded-full border"
-            />
-            <div className="ml-4">
-              <p className="text-xl font-semibold">{user.name}</p>
-              <p className="text-gray-600 flex items-center gap-2">
-                <FaEnvelope /> {user.email}
-              </p>
-            </div>       
+                src={`https://ui-avatars.com/api/?name=${user.name || "User"}`}
+                alt="Avatar"
+                className="w-20 h-20 rounded-full border"
+              />
+              <div className="ml-4">
+                <p className="text-xl font-semibold">{user.name}</p>
+                <p className="text-gray-600 flex items-center gap-2">
+                  <FaEnvelope /> {user.email}
+                </p>
+              </div>
             </div>
             <button
               onClick={handleLogout}
@@ -247,7 +240,7 @@ const DashboardUser2 = () => {
             </button>
           </div>
 
-          {/* Main Actions */}
+          {/* MIDDILE SECTION*/}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="bg-blue-100 p-4 rounded-xl flex flex-col items-start gap-2">
               <FaClock className="text-blue-600 text-3xl" />
@@ -358,7 +351,6 @@ const DashboardUser2 = () => {
                   </div>
                 </>
               )}
-
 
             </div>
           </div>
