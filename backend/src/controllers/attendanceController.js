@@ -1,4 +1,5 @@
 const Attendance = require("../models/attendance");
+const Leave = require("../models/leave");
 const User = require("../models/user");
 // POST /api/attendance/mark
 // controllers/attendanceController.js
@@ -21,7 +22,9 @@ const markAttendance = async (req, res) => {
         await newRecord.save();
         return res.status(201).json(newRecord);
       } else {
-        return res.status(400).json({ message: "Check-in first before check-out" });
+        return res
+          .status(400)
+          .json({ message: "Check-in first before check-out" });
       }
     }
 
@@ -40,7 +43,7 @@ const markAttendance = async (req, res) => {
 
 // get user attendace for current day
 const getTodayUserAttendance = async (req, res) => {
-  const  userId  = req.user._id;
+  const userId = req.user._id;
   const today = new Date().toISOString().split("T")[0];
 
   try {
@@ -77,7 +80,7 @@ const getTodayAttendanceCount = async (req, res) => {
     const today = new Date().toISOString().split("T")[0];
 
     const count = await Attendance.countDocuments({ date: today });
-    
+
     res.status(200).json({ count });
   } catch (err) {
     console.error("Error getting today attendance count:", err);
@@ -87,7 +90,9 @@ const getTodayAttendanceCount = async (req, res) => {
 
 const getUserAttendanceRecords = async (req, res) => {
   try {
-    const records = await Attendance.find({ userId: req.user._id }).sort({ date: -1 });
+    const records = await Attendance.find({ userId: req.user._id }).sort({
+      date: -1,
+    });
     res.json(records);
   } catch (error) {
     console.error(error);
@@ -95,13 +100,75 @@ const getUserAttendanceRecords = async (req, res) => {
   }
 };
 
+// this contoller is for pie char
+const getAttendanceSummary = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const now = new Date();
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+    const records = await Attendance.find({
+      userId,
+      date: { $gte: firstDay, $lte: lastDay },
+    });
+
+    const summary = {
+      Present: 0,
+      Absent: 0,
+      Leave: 0,
+    };
+
+    records.forEach((record) => {
+      if (record.status in summary) {
+        summary[record.status]++;
+      }
+    });
+
+    res.json(summary);
+  } catch (err) {
+    console.error("Error getting summary:", err);
+    res.status(500).json({ message: "Error fetching summary" });
+  }
+};
+
+// this is for the calendar for user view
+const getMonthlyAttendance = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+    const records = await Attendance.find({
+      userId,
+      date: { $gte: startOfMonth, $lte: endOfMonth },
+    });
+
+    const data = {};
+
+    records.forEach((record) => {
+      const formattedDate = record.date.toLocaleDateString('en-CA'); // outputs YYYY-MM-DD in local time
 
 
+      data[formattedDate] = record.status; // "Present", "Absent", etc.
+    });
+
+    res.json(data);
+  } catch (error) {
+    console.error("Error fetching monthly attendance:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
 
 module.exports = {
   markAttendance,
   getTodayUserAttendance,
   getAllUserAttendance,
   getTodayAttendanceCount,
-  getUserAttendanceRecords
+  getUserAttendanceRecords,
+  getAttendanceSummary,
+  getMonthlyAttendance,
 };

@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { markAttendance, getTodayUserAttendance, getAllUserAttendance, getTodayAttendanceCount, getUserAttendanceRecords } = require("../../controllers/attendanceController");
+const { markAttendance, getTodayUserAttendance, getAllUserAttendance, getTodayAttendanceCount, getUserAttendanceRecords, getAttendanceSummary, getMonthlyAttendance } = require("../../controllers/attendanceController");
 const { authenticate, adminOnly } = require("../../middleware/authMiddleware")
 
 // USER ROUTES
@@ -10,6 +10,10 @@ router.post("/attendance/mark", authenticate,  markAttendance);
 router.get("/attendance/today", authenticate,  getTodayUserAttendance);
 // for getting all the records of each user
 router.get("/attendance/records", authenticate, getUserAttendanceRecords);
+// fro getting attendace to show in pie chart
+router.get("/attendance/summary", authenticate, getAttendanceSummary);
+// for getting the attendace to show in the clalendar
+router.get("/attendance/month/calendar", authenticate, getMonthlyAttendance);
 
 // ADMIN TO VIEW
 router.get("/attendance/all", authenticate, adminOnly, getAllUserAttendance);
