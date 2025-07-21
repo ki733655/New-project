@@ -1,5 +1,6 @@
 "use client";
-import React from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import {
   FaUsers,
   FaCheckCircle,
@@ -7,6 +8,7 @@ import {
   FaUmbrellaBeach,
   FaListUl,
 } from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
 
 import {
   BarChart,
@@ -21,18 +23,84 @@ import {
 
 
 const DashboardAdmin = () => {
-  // Dummy stats
-  const stats = {
-    totalEmployees: 32,
-    present: 26,
-    absent: 4,
-    onLeave: 2,
-  };
+  // to store the stats data
+  const [stats, setStats] = useState({
+    totalEmployees: 0,
+    present: 0,
+    absent: 0,
+    onLeave: 0,
+  });
 
-  const pendingLeaves = [
-    { id: 1, name: "Aiyan Khan", date: "2025-07-01", reason: "Sick leave" },
-    { id: 2, name: "Zara Ali", date: "2025-07-02", reason: "Family function" },
-  ];
+  // to store the bar data
+  const [barData, setBarData] = useState([]);
+  const [leaveData, setLeaveData] = useState([]);
+
+
+  const handleLeaveAction = async (id: string, action: "Approved" | "Rejected") => {
+  try {
+    await axios.put(`http://localhost:4000/leave/${id}/status`, { status: action }, {
+      withCredentials: true,
+    });
+
+    // Optimistically update UI
+    setLeaveData(prev => prev.filter(leave => leave.id !== id));
+    toast.success(`Leave ${action}`);
+  } catch (err) {
+    console.error("Error updating leave status", err);
+    alert("Failed to update leave status");
+  }
+};
+
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await axios.get("http://localhost:4000/dashboard/admin/stats");
+        setStats(res.data);
+      } catch (err) {
+        console.error("Error fetching stats", err);
+      } finally {
+        // setLoading(false);
+      }
+    };
+
+    fetchStats();
+
+    // fetching the bar data
+    const fetchBarData = async () => {
+      try {
+        const res = await axios.get("http://localhost:4000/dashboard/admin/barGraph");
+        setBarData(res.data);
+        console.log(res.data);
+      } catch (err) {
+        console.error("Error fetching stats", err);
+      } finally {
+        // setLoading(false);
+      }
+    };
+
+    fetchBarData();
+
+    // fetch the leave data
+    const fetchLeaveData = async () => {
+      try {
+        const res = await axios.get("http://localhost:4000/leave/all", {
+          withCredentials: true,
+        });
+        setLeaveData(res.data);
+        console.log(res.data);
+      } catch (err) {
+        console.error("Error fetching stats", err);
+      } finally {
+        // setLoading(false);
+      }
+    };
+
+    fetchLeaveData();
+
+  }, []);
+
+
 
 
 
@@ -77,14 +145,7 @@ const DashboardAdmin = () => {
         <div className="bg-white p-6 rounded-xl shadow-md">
           <h2 className="text-xl font-bold mb-4">📊 Weekly Attendance Summary</h2>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={[
-              { day: "Mon", Present: 25, Absent: 5 },
-              { day: "Tue", Present: 28, Absent: 2 },
-              { day: "Wed", Present: 30, Absent: 0 },
-              { day: "Thu", Present: 27, Absent: 3 },
-              { day: "Fri", Present: 29, Absent: 1 },
-              { day: "Sat", Present: 26, Absent: 4 },
-            ]}>
+            <BarChart data={barData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="day" />
               <YAxis />
@@ -99,11 +160,11 @@ const DashboardAdmin = () => {
         {/* Pending Leaves Section */}
         <div className="bg-white p-6 rounded-2xl shadow-md">
           <h2 className="text-xl font-bold mb-4">🧾 Pending Leave Requests</h2>
-          {pendingLeaves.length === 0 ? (
+          {leaveData.length === 0 ? (
             <p className="text-gray-500">No pending requests.</p>
           ) : (
             <ul className="space-y-4">
-              {pendingLeaves.map((leave) => (
+              {leaveData.map((leave) => (
                 <li
                   key={leave.id}
                   className="flex justify-between items-center border-b pb-3"
@@ -111,17 +172,21 @@ const DashboardAdmin = () => {
                   <div>
                     <p className="font-semibold">{leave.name}</p>
                     <p className="text-sm text-gray-600">
-                      {leave.date} - {leave.reason}
+                      {leave.toDate} - {leave.fromDate} --- {leave.reason}
                     </p>
                   </div>
-                  <div className="flex gap-2">
-                    <button className="bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600">
-                      Approve
-                    </button>
-                    <button className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600">
-                      Reject
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => handleLeaveAction(leave.id, "Approved")}
+                    className="bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600"
+                  >
+                    Approve
+                  </button>
+                  <button
+                    onClick={() => handleLeaveAction(leave.id, "Rejected")}
+                    className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600"
+                  >
+                    Reject
+                  </button>
                 </li>
               ))}
             </ul>

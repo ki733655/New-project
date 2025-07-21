@@ -137,7 +137,7 @@ const DashboardUser2 = () => {
     fetchMonthlyAttendance();
 
 
-  }, []);
+  }, [hasClockedOut]);
 
 
   const handleClockIn = async () => {

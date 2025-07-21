@@ -25,6 +25,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import Link from 'next/link';
 import { CgProfile } from 'react-icons/cg';
 import { Avatar, Menu, MenuItem } from '@mui/material';
+import Footer from '../Footer/Footer';
 
 const drawerWidth = 240;
 
@@ -33,6 +34,7 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
 }>(({ theme, open }) => ({
   flexGrow: 1,
   padding: theme.spacing(3),
+  minHeight: '100vh',
   transition: theme.transitions.create('margin', {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -79,7 +81,6 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 const items = [
   { text: 'Home', icon: <PersonIcon />, url: '/dashboard-user' },
   { text: 'Profile', icon: <PersonIcon />, url: '/profile' },
-  { text: 'Documents', icon: <DescriptionIcon />, url: '/documents' },
   { text: 'Attendance', icon: <PaymentIcon />, url: '/admin/attendance' },
   { text: 'Setting', icon: <SettingsIcon />, url: '/setting' },
 ];
@@ -136,9 +137,6 @@ export default function MainLayout({ children }) {
             Dashboard
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
-          <IconButton onClick={handleMenuOpen}>
-            <Avatar alt={data.name} src="/static/images/avatar/1.jpg" />
-          </IconButton>
           <Menu
             anchorEl={anchorEl}
             open={Boolean(anchorEl)}
@@ -193,9 +191,10 @@ export default function MainLayout({ children }) {
           ))}
         </List>
       </Drawer>
-      <Main open={open}>
+      <Main open={open} sx={{ minHeight: '100vh', padding:0 }}>
         <DrawerHeader />
         {children}
+        <Footer/>
       </Main>
     </Box>
   );

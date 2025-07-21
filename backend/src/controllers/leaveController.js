@@ -1,4 +1,5 @@
 const Leave =  require("../models/leave");
+const user = require("../models/user");
 
 const applyLeave = async (req, res) => {
   try {
@@ -37,11 +38,21 @@ const getUserLeaves = async (req, res) => {
 
 // Optional: Admin can see all leave requests
 const getAllLeaves = async (req, res) => {
-  try {
-    const allLeaves = await Leave.find().populate("userId", "name email");
-    res.status(200).json(allLeaves);
+ try {
+    const leaves = await Leave.find({ status: "Pending" }).populate("userId", "name");
+    
+    const formatted = leaves.map(leave => ({
+      id: leave._id,
+      name: leave.userId.name,
+      toDate: leave.toDate.toISOString().split("T")[0],
+      fromDate: leave.fromDate.toISOString().split("T")[0],
+      reason: leave.reason,
+    }));
+
+    console.log(formatted);
+    res.json(formatted);
   } catch (err) {
-    console.error("Fetch all leaves error:", err);
+    console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 };
