@@ -6,11 +6,13 @@ import Header from "@/components/layout/Header/Header"
 import Footer from "@/components/layout/Footer/Footer";
 import Login from "@/components/Login/Login";
 import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from "react-toastify";
 
 
 
 const inter = Inter({ subsets: ["latin"] });
 import { usePathname } from "next/navigation";
+import MainLayout from "@/components/layout/Header/Header";
 
 // export const metadata: Metadata = {
 //   title: "Create Next App",
@@ -30,21 +32,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        {
-          decider ? (
-            <Login />
-          ) : (
-            <>
-              <Header>
-                <div className="min-h-[80vh] ">
-                  {children}
-                </div>
-                <Footer />
-              </Header>
-            </>
-          )
-        }
+        <ToastContainer />
+        {decider ? (
+          <Login />
+        ) : (
+          <MainLayout>
+            {children}
+          </MainLayout>
+        )}
       </body>
-    </html >
+    </html>
   );
 }

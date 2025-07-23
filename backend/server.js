@@ -7,7 +7,7 @@ const indexRoute = require("./src/routes/index");
 const  mongoose  = require("mongoose");
 require("dotenv").config();
 const cookieParser = require("cookie-parser");
-
+require("./src/routes/cronJobs/autoAbsent");
 
 
 // connection to database

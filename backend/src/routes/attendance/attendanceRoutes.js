@@ -1,6 +1,12 @@
 const express = require("express");
 const router = express.Router();
+//  controllers
 const { markAttendance, getTodayUserAttendance, getAllUserAttendance, getTodayAttendanceCount, getUserAttendanceRecords, getAttendanceSummary, getMonthlyAttendance } = require("../../controllers/attendanceController");
+
+const {getStatsForAdminDashboard} = require("../../controllers/adminDashboard/stats");
+const {getBarForAdminDashboard} = require("../../controllers/adminDashboard/barGraph");
+
+// middleware 
 const { authenticate, adminOnly } = require("../../middleware/authMiddleware")
 
 // USER ROUTES
@@ -16,6 +22,11 @@ router.get("/attendance/summary", authenticate, getAttendanceSummary);
 router.get("/attendance/month/calendar", authenticate, getMonthlyAttendance);
 
 // ADMIN TO VIEW
+// get stats
+router.get("/dashboard/admin/stats",  getStatsForAdminDashboard  );
+// get bar graph data
+router.get("/dashboard/admin/barGraph", getBarForAdminDashboard);
+
 router.get("/attendance/all", authenticate, adminOnly, getAllUserAttendance);
 router.get("/attendance/today/count", authenticate , adminOnly, getTodayAttendanceCount);
 
