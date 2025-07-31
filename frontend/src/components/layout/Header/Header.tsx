@@ -25,7 +25,10 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import Link from 'next/link';
 import { CgProfile } from 'react-icons/cg';
 import { Avatar, Menu, MenuItem } from '@mui/material';
-import Footer from '../Footer/Footer';
+import { MdHome, MdAccessTime, MdHistory, MdSettings } from "react-icons/md";
+import { FaUserEdit } from "react-icons/fa";
+import { TbLogout2 } from "react-icons/tb"; // Optional: Logout
+import { BiCalendarCheck } from "react-icons/bi"; // Optional alternative for leave/attendance  
 
 const drawerWidth = 240;
 
@@ -78,11 +81,15 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   justifyContent: 'flex-end',
 }));
 
+const iconStyle = { color: '#0F572D', fontSize: '1.4rem' };
+
+
 const items = [
-  { text: 'Home', icon: <PersonIcon />, url: '/dashboard-user' },
-  { text: 'Profile', icon: <PersonIcon />, url: '/profile' },
-  { text: 'Attendance', icon: <PaymentIcon />, url: '/admin/attendance' },
-  { text: 'Setting', icon: <SettingsIcon />, url: '/setting' },
+  { text: 'Home', icon: <MdHome style={iconStyle}  />, url: '/dashboard/user' },
+  { text: 'View attendance', icon: <MdAccessTime style={iconStyle} />, url: '/attendance/history' },
+  { text: 'Apply leave', icon: <BiCalendarCheck style={iconStyle} />, url: '/leave/apply' },
+  { text: 'Show leave', icon: <MdHistory style={iconStyle} />, url: '/leave/history' },
+  { text: 'Setting', icon: <FaUserEdit style={iconStyle} />, url: '/profile/edit' },
 ];
 
 export default function MainLayout({ children }) {
@@ -122,7 +129,7 @@ export default function MainLayout({ children }) {
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <AppBar position="fixed" open={open}>
+      <AppBar position="fixed" open={open} sx={{ backgroundColor: '#157A3F' }}>
         <Toolbar>
           <IconButton
             color="inherit"
@@ -133,9 +140,6 @@ export default function MainLayout({ children }) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            Dashboard
-          </Typography>
           <Box sx={{ flexGrow: 1 }} />
           <Menu
             anchorEl={anchorEl}
@@ -152,11 +156,6 @@ export default function MainLayout({ children }) {
               },
             }}
           >
-            <MenuItem component={Link} href="/myProfile" sx={{ padding: '10px 20px' }}>
-              <CgProfile className='mr-4 text-[20px]' />
-              <Typography variant="body1">Profile</Typography>
-            </MenuItem>
-
           </Menu>
         </Toolbar>
       </AppBar>
@@ -194,7 +193,6 @@ export default function MainLayout({ children }) {
       <Main open={open} sx={{ minHeight: '100vh', padding:0 }}>
         <DrawerHeader />
         {children}
-        <Footer/>
       </Main>
     </Box>
   );

@@ -40,11 +40,14 @@ const DashboardUser2 = () => {
   const [attendanceCount, setAttendanceCount] = useState(null);
   // to store the calendar data 
   const [attendanceRecords, setAttendanceRecords] = useState({});
+  // to store profile pic
+  const [profilePic, setProfilePic] = useState(null);
 
- const getStatus = (date) => {
-  const formatted = date.toLocaleDateString('en-CA'); // YYYY-MM-DD in local timezone
-  return attendanceRecords[formatted];
-};
+
+  const getStatus = (date) => {
+    const formatted = date.toLocaleDateString('en-CA'); // YYYY-MM-DD in local timezone
+    return attendanceRecords[formatted];
+  };
 
 
   // to store the pie chart data
@@ -71,6 +74,20 @@ const DashboardUser2 = () => {
 
     const userObj = JSON.parse(storedUser);
     setUser(userObj);
+
+    // fetching the profile pic 
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get("http://localhost:4000/me", {
+          withCredentials: true,
+        });
+        setProfilePic(res.data.profilePicUrl);
+      } catch (err) {
+        console.error("Failed to fetch user:", err);
+      }
+    };
+
+    fetchUser();
 
     // fethcing attendance 
     const fetchTodayAttendance = async () => {
@@ -198,14 +215,13 @@ const DashboardUser2 = () => {
 
 
 
-  const COLORS = ["#34D399", "#F87171", "#FBBF24"]; // green, red, yellow
+  const COLORS = ["#23D16C", "#F87171", "#FBBF24"]; // green, red, yellow
 
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center text-2xl">
         <ImSpinner4 className="animate-spin mr-2" />
-        Loading your dashboard...
       </div>
     );
   }
@@ -213,14 +229,18 @@ const DashboardUser2 = () => {
   return (
     <>
       <ToastContainer position="top-right" autoClose={3000} />
-      <div className="min-h-screen bg-gray-100 p-6">
+      <div className="min-h-screen bg-green-50 p-6">
 
         <div className="max-w-5xl mx-auto space-y-6">
           {/* PROFILE AND lOGOUT SECTION */}
           <div className="bg-white p-6 rounded-2xl shadow-md flex justify-between items-center">
             <div className="flex justify-between items-center">
               <img
-                src={`https://ui-avatars.com/api/?name=${user.name || "User"}`}
+                src={profilePic}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = `https://ui-avatars.com/api/?name=${user?.name || 'User'}`;
+                }}
                 alt="Avatar"
                 className="w-20 h-20 rounded-full border"
               />
@@ -229,6 +249,13 @@ const DashboardUser2 = () => {
                 <p className="text-gray-600 flex items-center gap-2">
                   <FaEnvelope /> {user.email}
                 </p>
+                <button
+                  onClick={() => router.push("/profile/edit")}
+                  className="mt-2 px-4 py-1 bg-green-500 hover:bg-[#1EAE5A] text-white rounded-lg"
+                >
+                  Edit Profile
+                </button>
+
               </div>
             </div>
             <button
@@ -242,8 +269,8 @@ const DashboardUser2 = () => {
 
           {/* MIDDILE SECTION*/}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="bg-blue-100 p-4 rounded-xl flex flex-col items-start gap-2">
-              <FaClock className="text-blue-600 text-3xl" />
+            <div className="bg-white shadow-lg p-4 rounded-xl flex flex-col items-start gap-2">
+              <FaClock className="text-green-500 text-3xl" />
               <p className="text-sm text-gray-500">Today's Status</p>
               <p className="text-xl font-bold">{attendanceStatus}</p>
               {!isClockedIn && !hasClockedOut ? (
@@ -266,13 +293,13 @@ const DashboardUser2 = () => {
             </div>
 
 
-            <div className="bg-green-100 p-4 rounded-xl flex flex-col items-start gap-2">
-              <FaCalendarCheck className="text-green-600 text-3xl" />
-              <p className="text-sm text-gray-500">Click the below button to view your attendance records</p>
+            <div className="bg-white shadow-lg p-4 rounded-xl flex flex-col items-start gap-2">
+              <FaCalendarCheck className="text-green-500 text-3xl" />
+              <p className="text-lg text-gray-500 font-bold">Attendance records</p>
               <p className="text-xl font-bold">{attendanceCount}</p>
               <button
                 onClick={() => router.push("/attendance/history")}
-                className="mt-2 px-4 py-1 bg-green-500 text-white rounded-md"
+                className="mt-2 px-4 py-1 bg-green-500 hover:bg-[#1EAE5A] text-white rounded-md"
               >
                 View Records
               </button>
@@ -282,18 +309,17 @@ const DashboardUser2 = () => {
 
 
 
-            <div className="bg-yellow-100 p-4 rounded-xl flex flex-col items-start gap-2">
-              <FaCalendarCheck className="text-yellow-600 text-3xl" />
-              <p className="text-sm text-gray-500">Leaves Taken</p>
-              <p className="text-xl font-bold">4</p>
+            <div className="bg-white shadow-lg p-4 rounded-xl flex flex-col items-start gap-2">
+              <FaCalendarCheck className="text-green-500 text-3xl" />
+              <p className="text-lg font-bold text-gray-500">Leaves</p>
               <button
                 onClick={() => router.push("/leave/apply")}
-                className="mt-2 px-4 py-1 bg-yellow-500 text-white rounded-md">
+                className="mt-2 px-4 py-1 bg-green-500 hover:bg-[#1EAE5A] text-white rounded-md">
                 Apply for Leave
               </button>
               <button
                 onClick={() => router.push("/leave/history")}
-                className="mt-2 px-4 py-1 bg-purple-600 text-white rounded-md"
+                className="mt-2 px-4 py-1 bg-green-500 hover:bg-[#1EAE5A] text-white rounded-md"
               >
                 View Leave History
               </button>
@@ -343,10 +369,6 @@ const DashboardUser2 = () => {
                     />
                     <p className="mt-4 text-sm text-gray-600">
                       Selected Date: <strong>{selectedDate.toDateString()}</strong><br />
-                      Status:{" "}
-                      <span className="font-semibold">
-                        {getStatus(selectedDate) || "No data"}
-                      </span>
                     </p>
                   </div>
                 </>
