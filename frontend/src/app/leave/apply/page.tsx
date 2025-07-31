@@ -45,7 +45,7 @@ const LeaveApplyPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-green-50 p-6">
       <div className="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow-md">
         <h1 className="text-2xl font-bold mb-4">📋 Apply for Leave</h1>
 
@@ -108,7 +108,7 @@ const LeaveApplyPage = () => {
 
           <button
             type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md"
+            className="bg-green-500 hover:bg-green-700 text-white px-6 py-2 rounded-md"
           >
             Submit
           </button>

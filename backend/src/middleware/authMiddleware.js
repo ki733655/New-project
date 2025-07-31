@@ -32,4 +32,6 @@ const adminOnly = (req, res, next) => {
   }
  
 };
+
+
 module.exports = {authenticate , adminOnly};

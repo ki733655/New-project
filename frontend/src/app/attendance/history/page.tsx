@@ -29,11 +29,21 @@ const AttendanceHistory = () => {
     fetchAttendanceRecords();
   }, []);
 
+  // Helper function
+const formatDate = (rawDate) => {
+  const date = new Date(rawDate);
+  return date.toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+};
+
   // Prepare CSV export data
   const csvData = attendance.map((item) => ({
     name: user.name,
     email: user.email,
-    date: item.date,
+    date: formatDate(item.date),
     checkIn: item.checkIn || "--",
     checkOut: item.checkOut || "--",
     status: item.status,
@@ -49,7 +59,7 @@ const AttendanceHistory = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-green-50 p-6">
       <div className="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-md">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">📋 Attendance Records</h2>
@@ -57,7 +67,7 @@ const AttendanceHistory = () => {
             data={csvData}
             headers={csvHeaders}
             filename={"attendance-report.csv"}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-700"
           >
             Export CSV
           </CSVLink>
@@ -76,7 +86,7 @@ const AttendanceHistory = () => {
             <tbody>
               {attendance.map((item, idx) => (
                 <tr key={idx} className="border-b hover:bg-gray-50">
-                  <td className="px-4 py-2">{item.date}</td>
+                  <td className="px-4 py-2">{formatDate(item.date)}</td>
                   <td className="px-4 py-2">{item.checkIn || "—"}</td>
                   <td className="px-4 py-2">{item.checkOut || "—"}</td>
                   <td className="px-4 py-2">

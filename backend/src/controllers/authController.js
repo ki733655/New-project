@@ -1,6 +1,7 @@
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const fs = require("fs");
 const { JWT_SECRET } = require("../config/config");
 
 const register = async (req, res) => {
@@ -87,17 +88,65 @@ const login = async (req, res) => {
           role: user.role,
         },
       });
-
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
 };
-
-
 
 const logout = (req, res) => {
   res.clearCookie("token");
   res.json({ message: "Logged out successfully" });
 };
 
-module.exports = { register, login, logout};
+// to update profile and password
+const updateProfile = async (req, res) => {
+  try {
+    const userId = req.user.id; // or req.params.id if using params
+    const { password } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Update profile photo if uploaded
+    if (req.file) {
+      if (user.profilePhoto) {
+        // Delete old image
+        fs.unlink(`uploads/profile-photos/${user.profilePhoto}`, (err) => {
+          if (err) console.log("Old image delete error:", err);
+        });
+      }
+      user.profilePhoto = req.file.filename;
+    }
+
+    // Update password
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(password, salt);
+    }
+
+    await user.save();
+    res.json({ message: "Profile updated successfully", user });
+    console.log("profile updated");
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+const me = (req, res) => {
+  try {
+    const { _id, name, email, profilePhoto } = req.user;
+
+    const profilePicUrl = profilePhoto
+      ? `http://localhost:4000/uploads/profile-photos/${profilePhoto}`
+      : ""; // Default/fallback if not set
+
+    res.json({ _id, name, email, profilePicUrl });
+    console.log(req.user);
+  } catch (err) {
+    console.error("GET /me error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+module.exports = { register, login, logout, updateProfile, me };

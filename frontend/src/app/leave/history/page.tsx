@@ -54,7 +54,7 @@ const csvData = leaves.map((item) => ({
   ];
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-green-50 p-6">
       <div className="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-md">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">📄 Leave History</h1>
@@ -62,7 +62,7 @@ const csvData = leaves.map((item) => ({
             data={csvData}
             headers={csvHeaders}
             filename="leave-history.csv"
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-700"
           >
             Export CSV
           </CSVLink>
