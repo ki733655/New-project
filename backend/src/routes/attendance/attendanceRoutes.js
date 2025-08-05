@@ -23,9 +23,9 @@ router.get("/attendance/month/calendar", authenticate, getMonthlyAttendance);
 
 // ADMIN TO VIEW
 // get stats
-router.get("/dashboard/admin/stats",  getStatsForAdminDashboard  );
+router.get("/dashboard/admin/stats",authenticate, adminOnly,  getStatsForAdminDashboard  );
 // get bar graph data
-router.get("/dashboard/admin/barGraph", getBarForAdminDashboard);
+router.get("/dashboard/admin/barGraph",authenticate, adminOnly, getBarForAdminDashboard);
 
 router.get("/attendance/all", authenticate, adminOnly, getAllUserAttendance);
 router.get("/attendance/today/count", authenticate , adminOnly, getTodayAttendanceCount);

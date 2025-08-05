@@ -29,9 +29,9 @@ const Login = () => {
       console.log(localStorage.getItem("user"));
 
       if (res.data.user.role === "admin") {
-        router.push("/dashboard-admin");
+        router.push("/dashboard/admin");
       } else {
-        router.push("/dashboard-user");
+        router.push("/dashboard/user");
       }
 
     } catch (err) {

@@ -16,7 +16,9 @@ const AdminAttendanceFilter = () => {
     const fetchAttendance = async () => {
       try {
         setLoading(true);
-        const res = await axios.get("http://localhost:4000/all");
+        const res = await axios.get("http://localhost:4000/attendance/all", {
+          withCredentials : true
+        });
         setData(res.data);
         console.log(data); // adjust if your API returns data in a nested format
       } catch (err) {
@@ -43,6 +45,16 @@ const AdminAttendanceFilter = () => {
 
   return nameMatch && statusMatch && dateMatch;
 });
+
+const formatDate = (isoDate) => {
+  if (!isoDate) return "—";
+  const date = new Date(isoDate);
+  return date.toLocaleDateString('en-IN', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+};
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
@@ -107,7 +119,7 @@ const AdminAttendanceFilter = () => {
                   <tr key={idx} className="border-b hover:bg-gray-50">
                     <td className="px-4 py-2">{entry.userId?.name || "—"}</td>
                     <td className="px-4 py-2">{entry.userId?.email || "—"}</td>
-                    <td className="px-4 py-2">{entry.date || "—"}</td>
+                    <td className="px-4 py-2">{formatDate(entry.date) || "—"}</td>
                     <td className="px-4 py-2">{entry.checkIn || "—"}</td>
                     <td className="px-4 py-2">{entry.checkOut || "—"}</td>
                     <td className="px-4 py-2">

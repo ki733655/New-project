@@ -52,10 +52,13 @@ const DashboardAdmin = () => {
 };
 
 
+
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await axios.get("http://localhost:4000/dashboard/admin/stats");
+        const res = await axios.get("http://localhost:4000/dashboard/admin/stats",{
+          withCredentials: true
+        });
         setStats(res.data);
       } catch (err) {
         console.error("Error fetching stats", err);
@@ -69,7 +72,9 @@ const DashboardAdmin = () => {
     // fetching the bar data
     const fetchBarData = async () => {
       try {
-        const res = await axios.get("http://localhost:4000/dashboard/admin/barGraph");
+        const res = await axios.get("http://localhost:4000/dashboard/admin/barGraph",{
+          withCredentials: true
+        });
         setBarData(res.data);
         console.log(res.data);
       } catch (err) {
@@ -111,9 +116,9 @@ const DashboardAdmin = () => {
 
         {/* Stats Section */}
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-          <div className="bg-white p-4 rounded-xl shadow flex items-center gap-4">
+          <div className="bg-blue-100 p-4 rounded-xl shadow flex items-center gap-4">
             <FaUsers className="text-blue-600 text-3xl" />
-            <div>
+            <div  >
               <p className="text-sm text-gray-500">Total Employees</p>
               <p className="text-xl font-bold">{stats.totalEmployees}</p>
             </div>

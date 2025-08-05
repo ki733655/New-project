@@ -276,7 +276,7 @@ const DashboardUser2 = () => {
               {!isClockedIn && !hasClockedOut ? (
                 <button
                   onClick={handleClockIn}
-                  className="mt-2 px-4 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-md"
+                  className="mt-2 px-4 py-1 bg-green-500 hover:bg-green-700 text-white rounded-md"
                 >
                   Clock In
                 </button>
