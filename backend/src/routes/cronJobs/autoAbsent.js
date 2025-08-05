@@ -1,16 +1,17 @@
 // routes/autoAbsent.js or cronJobs/autoAbsent.js
+console.log("AutoAbsent cron job loaded");
 
 const cron = require("node-cron");
 const Attendance = require("../../models/attendance");
 const User = require("../../models/user");
 
 // Runs every day at 11:59 PM
-cron.schedule("59 23 * * *", async () => {
+cron.schedule("0 12 * * *", async () => {
   const today = new Date();
 
-  // ✅ Exclude Saturday (6) and Sunday (0)
+  // ✅ Exclude  Sunday (0)
   const dayOfWeek = today.getDay();
-  if (dayOfWeek === 0 || dayOfWeek === 6) {
+  if (dayOfWeek === 0) {
     console.log("Weekend! Skipping absent marking.");
     return;
   }
