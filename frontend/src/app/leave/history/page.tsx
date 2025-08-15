@@ -2,51 +2,54 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { CSVLink } from "react-csv";
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
+// ✅ Type for a single leave record
+interface LeaveRecord {
+  leaveType: string;
+  fromDate: string;
+  toDate: string;
+  reason: string;
+  status: "Approved" | "Pending" | "Rejected" | string;
+}
 
-const LeaveHistoryPage = () => {
-  
-  const [leaves, setLeaves] = useState([]);
+const LeaveHistoryPage: React.FC = () => {
+  const [leaves, setLeaves] = useState<LeaveRecord[]>([]);
 
   useEffect(() => {
-    const fetchleavedata = async () => {
-    try {
-      const response = await axios.get(
-        `${API_BASE_URL}leave/user/history`, // same as clock-in
-        { withCredentials: true }
-      );
+    const fetchLeaveData = async () => {
+      try {
+        const response = await axios.get<LeaveRecord[]>(
+          `${API_BASE_URL}leave/user/history`,
+          { withCredentials: true }
+        );
+        setLeaves(response.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
 
-      setLeaves(response.data);
-
-      
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  fetchleavedata();
+    fetchLeaveData();
   }, []);
 
-  // to format the date into visually good
-  const formatDate = (isoDate: string) => {
-  const date = new Date(isoDate);
-  return date.toLocaleDateString("en-IN", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-};
+  // ✅ Date formatting with correct param type
+  const formatDate = (isoDate: string): string => {
+    const date = new Date(isoDate);
+    return date.toLocaleDateString("en-IN", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
 
-const csvData = leaves.map((item) => ({
-  type: item.leaveType,
-  from: formatDate(item.fromDate),
-  to: formatDate(item.toDate),
-  reason: item.reason,
-  status: item.status,
-}));
-
-
+  const csvData = leaves.map((item) => ({
+    type: item.leaveType,
+    from: formatDate(item.fromDate),
+    to: formatDate(item.toDate),
+    reason: item.reason,
+    status: item.status,
+  }));
 
   const csvHeaders = [
     { label: "Type", key: "type" },
@@ -106,7 +109,10 @@ const csvData = leaves.map((item) => ({
               ))}
               {leaves.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-4 py-4 text-center text-gray-500">
+                  <td
+                    colSpan={5}
+                    className="px-4 py-4 text-center text-gray-500"
+                  >
                     No leave records found.
                   </td>
                 </tr>
