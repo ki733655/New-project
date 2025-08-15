@@ -8,7 +8,6 @@ import CssBaseline from '@mui/material/CssBaseline';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
-import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -19,12 +18,8 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import PersonIcon from '@mui/icons-material/Person';
-import DescriptionIcon from '@mui/icons-material/Description';
-import PaymentIcon from '@mui/icons-material/Payment';
-import SettingsIcon from '@mui/icons-material/Settings';
 import Link from 'next/link';
-import { CgProfile } from 'react-icons/cg';
-import { Avatar, colors, Menu, MenuItem } from '@mui/material';
+import {  Menu} from '@mui/material';
 import { MdHome, MdAccessTime, MdHistory, MdSettings } from "react-icons/md";
 import { FaUserEdit } from "react-icons/fa";
 import { TbLogout2 } from "react-icons/tb"; // Optional: Logout
@@ -90,7 +85,14 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 
 const iconStyle = { color: '#0F572D', fontSize: '1.4rem' };
 
-export default function MainLayout({ children }) {
+
+import { ReactNode } from "react";
+interface MainLayoutProps {
+  children: ReactNode;
+}
+
+
+export default function MainLayout({ children } : MainLayoutProps) {
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
   const [loading, setLoading] = useState(true);
   const pathname = usePathname();
@@ -160,9 +162,6 @@ export default function MainLayout({ children }) {
     setOpen(false);
   };
 
-  const handleMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
 
   const handleMenuClose = () => {
     setAnchorEl(null);
