@@ -78,6 +78,12 @@ const login = async (req, res) => {
         sameSite: "strict",
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       })
+      .cookie("role", user.role, {
+        httpOnly: false, // role can be readable by frontend too
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      })
       .status(200)
       .json({
         message: "Login successful",
@@ -93,8 +99,11 @@ const login = async (req, res) => {
   }
 };
 
+
 const logout = (req, res) => {
   res.clearCookie("token");
+  res.clearCookie("role");
+
   res.json({ message: "Logged out successfully" });
 };
 
