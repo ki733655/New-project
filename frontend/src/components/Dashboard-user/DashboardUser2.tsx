@@ -5,7 +5,6 @@ import {
   FaCalendarCheck,
   FaClock,
   FaSignOutAlt,
-  FaUser,
   FaEnvelope,
 } from "react-icons/fa";
 import { ImSpinner4 } from "react-icons/im";
@@ -19,66 +18,67 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-
-// calendar 
-import 'react-calendar/dist/Calendar.css';
+import "react-calendar/dist/Calendar.css";
 import Calendar from "react-calendar";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
-const DashboardUser2 = () => {
+// ---------- Types ----------
+type User = {
+  name: string;
+  email: string;
+};
+
+type AttendanceRecords = Record<string, "Present" | "Absent" | "Half-day">;
+
+type SummaryData = {
+  name: string;
+  value: number;
+};
+
+const DashboardUser2: React.FC = () => {
   const router = useRouter();
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [attendanceStatus, setAttendanceStatus] = useState(null);
-  // to track clocked in or not 
+  const [attendanceStatus, setAttendanceStatus] = useState<string | null>(null);
   const [isClockedIn, setIsClockedIn] = useState(false);
-  // to track clocked out or not
   const [hasClockedOut, setHasClockedOut] = useState(false);
-  // calendar
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  // to store the attendance count
-  const [attendanceCount, setAttendanceCount] = useState(null);
-  // to store the calendar data 
-  const [attendanceRecords, setAttendanceRecords] = useState({});
-  // to store profile pic
-  const [profilePic, setProfilePic] = useState(null);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [attendanceCount, setAttendanceCount] = useState<number | null>(null);
+  const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecords>({});
+  const [profilePic, setProfilePic] = useState<string | null>(null);
+  const [weeklySummaryData, setWeeklySummaryData] = useState<SummaryData[]>([]);
+  const [isClient, setIsClient] = useState(false);
 
-
-  const getStatus = (date) => {
-    const formatted = date.toLocaleDateString('en-CA'); // YYYY-MM-DD in local timezone
+  const getStatus = (date: Date) => {
+    const formatted = date.toLocaleDateString("en-CA");
     return attendanceRecords[formatted];
   };
 
-
-  // to store the pie chart data
-  const [weeklySummaryData, setWeeklySummaryData] = useState([]);
-
-  const tileClassName = ({ date, view }) => {
+  const tileClassName = ({ date, view }: { date: Date; view: string }) => {
     if (view === "month") {
       const status = getStatus(date);
-      if (status === "Present") return 'react-calendar__tile--present';
-      if (status === "Absent") return 'react-calendar__tile--absent';
-      if (status === "Half-day") return 'react-calendar__tile--halfday';
+      if (status === "Present") return "react-calendar__tile--present";
+      if (status === "Absent") return "react-calendar__tile--absent";
+      if (status === "Half-day") return "react-calendar__tile--halfday";
     }
     return null;
   };
-
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setLoading(false);
+    } else {
+      return router.push("/login");
     }
 
-    if (!storedUser) return router.push("/login");
-
-    const userObj = JSON.parse(storedUser);
+    const userObj: User = JSON.parse(storedUser);
     setUser(userObj);
 
-    // fetching the profile pic 
     const fetchUser = async () => {
       try {
-        const res = await axios.get("http://localhost:4000/me", {
+        const res = await axios.get(`${API_BASE_URL}me`, {
           withCredentials: true,
         });
         setProfilePic(res.data.profilePicUrl);
@@ -86,49 +86,41 @@ const DashboardUser2 = () => {
         console.error("Failed to fetch user:", err);
       }
     };
-
     fetchUser();
 
-    // fethcing attendance 
     const fetchTodayAttendance = async () => {
       try {
-        const res = await axios.get("http://localhost:4000/attendance/today", {
-          withCredentials: true, // 🔒 send cookies
+        const res = await axios.get(`${API_BASE_URL}attendance/today`, {
+          withCredentials: true,
         });
-
         if (res.data) {
           const { checkIn, checkOut } = res.data;
-
           if (checkIn && checkOut) {
             setIsClockedIn(true);
-            setHasClockedOut(true);                 // No clock in/out anymore
-            setAttendanceStatus("Completed");      // Fully marked
+            setHasClockedOut(true);
+            setAttendanceStatus("Completed");
           } else if (checkIn && !checkOut) {
             setIsClockedIn(true);
-            setHasClockedOut(false);                 // Show Clock Out
+            setHasClockedOut(false);
             setAttendanceStatus("Present");
-          } else if (!checkIn && !checkOut) {
+          } else {
             setIsClockedIn(false);
-            setHasClockedOut(false);                 // Show Clock In
+            setHasClockedOut(false);
             setAttendanceStatus("Not Marked");
           }
         }
-
       } catch (err) {
         console.error("Failed to fetch today's attendance:", err);
         setAttendanceStatus("Error");
       }
     };
-
     fetchTodayAttendance();
 
-    // fetch for the pie chart
     const fetchSummary = async () => {
       try {
-        const res = await axios.get("http://localhost:4000/attendance/summary", {
+        const res = await axios.get(`${API_BASE_URL}attendance/summary`, {
           withCredentials: true,
         });
-        console.log("Monthly Summary:", res.data);
         setWeeklySummaryData([
           { name: "Present", value: res.data.Present },
           { name: "Leave", value: res.data.Leave },
@@ -140,10 +132,9 @@ const DashboardUser2 = () => {
     };
     fetchSummary();
 
-    // fetch for the calendar
     const fetchMonthlyAttendance = async () => {
       try {
-        const res = await axios.get("http://localhost:4000/attendance/month/calendar", {
+        const res = await axios.get(`${API_BASE_URL}attendance/month/calendar`, {
           withCredentials: true,
         });
         setAttendanceRecords(res.data);
@@ -152,19 +143,15 @@ const DashboardUser2 = () => {
       }
     };
     fetchMonthlyAttendance();
-
-
-  }, [hasClockedOut]);
-
+  }, [hasClockedOut, router]);
 
   const handleClockIn = async () => {
     try {
       await axios.post(
-        "http://localhost:4000/attendance/mark",
+        `${API_BASE_URL}attendance/mark`,
         { type: "checkin" },
         { withCredentials: true }
       );
-
       setIsClockedIn(true);
       setHasClockedOut(false);
       setAttendanceStatus("Present");
@@ -175,16 +162,14 @@ const DashboardUser2 = () => {
     }
   };
 
-
   const handleClockOut = async () => {
     try {
       await axios.post(
-        "http://localhost:4000/attendance/mark", // same as clock-in
+        `${API_BASE_URL}attendance/mark`,
         { type: "checkout" },
         { withCredentials: true }
       );
-
-      setIsClockedIn(false); // user is now clocked out
+      setIsClockedIn(false);
       setHasClockedOut(true);
       toast.success("✅ Clocked out successfully!");
     } catch (err) {
@@ -193,10 +178,9 @@ const DashboardUser2 = () => {
     }
   };
 
-
   const handleLogout = async () => {
     try {
-      await axios.post("http://localhost:4000/logout", {}, { withCredentials: true });
+      await axios.post(`${API_BASE_URL}logout`, {}, { withCredentials: true });
       router.push("/login");
     } catch (err) {
       console.error("Logout failed", err);
@@ -204,19 +188,11 @@ const DashboardUser2 = () => {
     }
   };
 
-
-
-  const [isClient, setIsClient] = useState(false);
-
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-
-
-
-  const COLORS = ["#23D16C", "#F87171", "#FBBF24"]; // green, red, yellow
-
+  const COLORS = ["#23D16C", "#F87171", "#FBBF24"];
 
   if (loading) {
     return (
@@ -230,24 +206,22 @@ const DashboardUser2 = () => {
     <>
       <ToastContainer position="top-right" autoClose={3000} />
       <div className="min-h-screen bg-green-50 p-6">
-
         <div className="max-w-5xl mx-auto space-y-6">
-          {/* PROFILE AND lOGOUT SECTION */}
+          {/* Profile and Logout */}
           <div className="bg-white p-6 rounded-2xl shadow-md flex justify-between items-center">
-            <div className="flex justify-between items-center">
+            <div className="flex items-center">
               <img
-                src={profilePic}
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = `https://ui-avatars.com/api/?name=${user?.name || 'User'}`;
-                }}
-                alt="Avatar"
+                src={
+                  profilePic ||
+                  `https://ui-avatars.com/api/?name=${user?.name || "User"}`
+                }
+                alt="Avatar" 
                 className="w-20 h-20 rounded-full border"
               />
               <div className="ml-4">
-                <p className="text-xl font-semibold">{user.name}</p>
+                <p className="text-xl font-semibold">{user?.name}</p>
                 <p className="text-gray-600 flex items-center gap-2">
-                  <FaEnvelope /> {user.email}
+                  <FaEnvelope /> {user?.email}
                 </p>
                 <button
                   onClick={() => router.push("/profile/edit")}
@@ -255,7 +229,6 @@ const DashboardUser2 = () => {
                 >
                   Edit Profile
                 </button>
-
               </div>
             </div>
             <button
@@ -267,11 +240,12 @@ const DashboardUser2 = () => {
             </button>
           </div>
 
-          {/* MIDDILE SECTION*/}
+          {/* Middle Section */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {/* Attendance status */}
             <div className="bg-white shadow-lg p-4 rounded-xl flex flex-col items-start gap-2">
               <FaClock className="text-green-500 text-3xl" />
-              <p className="text-sm text-gray-500">Today's Status</p>
+              <p className="text-sm text-gray-500">Today&apos;s Status</p>
               <p className="text-xl font-bold">{attendanceStatus}</p>
               {!isClockedIn && !hasClockedOut ? (
                 <button
@@ -292,7 +266,7 @@ const DashboardUser2 = () => {
               )}
             </div>
 
-
+            {/* Attendance records */}
             <div className="bg-white shadow-lg p-4 rounded-xl flex flex-col items-start gap-2">
               <FaCalendarCheck className="text-green-500 text-3xl" />
               <p className="text-lg text-gray-500 font-bold">Attendance records</p>
@@ -303,18 +277,16 @@ const DashboardUser2 = () => {
               >
                 View Records
               </button>
-
-
             </div>
 
-
-
+            {/* Leaves */}
             <div className="bg-white shadow-lg p-4 rounded-xl flex flex-col items-start gap-2">
               <FaCalendarCheck className="text-green-500 text-3xl" />
               <p className="text-lg font-bold text-gray-500">Leaves</p>
               <button
                 onClick={() => router.push("/leave/apply")}
-                className="mt-2 px-4 py-1 bg-green-500 hover:bg-[#1EAE5A] text-white rounded-md">
+                className="mt-2 px-4 py-1 bg-green-500 hover:bg-[#1EAE5A] text-white rounded-md"
+              >
                 Apply for Leave
               </button>
               <button
@@ -326,14 +298,12 @@ const DashboardUser2 = () => {
             </div>
           </div>
 
-          {/* pie chart and calendar section  */}
+          {/* Pie chart & Calendar */}
           <div className="bg-white p-6 rounded-2xl shadow-md">
             <h2 className="text-xl font-bold mb-4">📅 Attendance Overview</h2>
             <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
               {isClient && (
                 <>
-
-                  {/* Pie Chart */}
                   <div className="h-64">
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
@@ -359,21 +329,20 @@ const DashboardUser2 = () => {
                     </ResponsiveContainer>
                   </div>
 
-                  {/* Calendar */}
                   <div className="bg-gray-50 p-4 rounded-xl shadow-inner border">
                     <Calendar
-                      onChange={setSelectedDate}
+                      onChange={(value) => setSelectedDate(value as Date)}
                       value={selectedDate}
                       tileClassName={tileClassName}
                       className="rounded-lg border border-gray-200 w-full"
                     />
                     <p className="mt-4 text-sm text-gray-600">
-                      Selected Date: <strong>{selectedDate.toDateString()}</strong><br />
+                      Selected Date:{" "}
+                      <strong>{selectedDate.toDateString()}</strong>
                     </p>
                   </div>
                 </>
               )}
-
             </div>
           </div>
         </div>

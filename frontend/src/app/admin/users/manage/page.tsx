@@ -1,50 +1,58 @@
 "use client";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { FaUser, FaTrash, FaEdit, FaCheckCircle } from "react-icons/fa";
+import { FaUser, FaTrash, FaEdit } from "react-icons/fa";
 
+// Define the shape of your user data
+interface User {
+  _id: string;
+  empId: string;
+  name: string;
+  email: string;
+  role: string;
+}
 
-const UserManagement = () => {
-  const [users, setUsers] = useState([]);
+const UserManagement: React.FC = () => {
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
+  const [users, setUsers] = useState<User[]>([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editingUser, setEditingUser] = useState(null);
-  const [editFormData, setEditFormData] = useState({ name: "", email: "", role: "" });
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [editFormData, setEditFormData] = useState({
+    name: "",
+    email: "",
+    role: "",
+  });
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [roleFilter, setRoleFilter] = useState("All");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/get/user/details");
-        console.log(response.data);
-
+        const response = await axios.get<User[]>(`${API_BASE_URL}get/user/details`);
         setUsers(response.data);
-
-        if (!response) {
-          alert("Error while fetching");
-          console.log("Error while fetching", response);
-        }
       } catch (err) {
-        console.log(err);
+        console.error("Error while fetching users:", err);
+        alert("Error while fetching users");
       }
+    };
 
-    }
     fetchData();
-  }, []);
+  }, [API_BASE_URL]); // Added dependency array
 
-
-  // delete user codes 
+  // Delete user
   const handleDelete = async (id: string) => {
     try {
-      await axios.delete(`http://localhost:4000/delete/user/${id}`);
-      setUsers(users.filter(user => user.id !== id));
+      await axios.delete(`${API_BASE_URL}delete/user/${id}`);
+      setUsers((prev) => prev.filter((user) => user._id !== id));
     } catch (error) {
       console.error("Error deleting user:", error);
     }
   };
 
-  // edit user codes
-
-  const openEditModal = (user) => {
-    console.log("Editing User:", user);
+  // Edit user
+  const openEditModal = (user: User) => {
     setEditingUser(user);
     setEditFormData({ name: user.name, email: user.email, role: user.role });
     setIsEditModalOpen(true);
@@ -55,27 +63,30 @@ const UserManagement = () => {
     setEditingUser(null);
   };
 
-  const handleEditChange = (e) => {
+  const handleEditChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setEditFormData({ ...editFormData, [e.target.name]: e.target.value });
   };
 
   const handleEditSubmit = async () => {
+    if (!editingUser) return;
+
     try {
-      await axios.put(`http://localhost:4000/update/user/${editingUser._id}`, editFormData);
-
-      // Update state locally after successful API call
-      setUsers(users.map(user => user._id === editingUser._id ? { ...user, ...editFormData } : user));
-
+      await axios.put(`${API_BASE_URL}update/user/${editingUser._id}`, editFormData);
+      setUsers((prev) =>
+        prev.map((user) =>
+          user._id === editingUser._id ? { ...user, ...editFormData } : user
+        )
+      );
       closeEditModal();
     } catch (error) {
       console.error("Error updating user:", error);
     }
   };
 
-  const [searchQuery, setSearchQuery] = useState("");
-  const [roleFilter, setRoleFilter] = useState("All");
-
-  const filteredUsers = users.filter(user => {
+  // Filtering
+  const filteredUsers = users.filter((user) => {
     const matchesQuery =
       user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.empId.toLowerCase().includes(searchQuery.toLowerCase());
@@ -84,12 +95,8 @@ const UserManagement = () => {
       roleFilter === "All" ||
       user.role.trim().toLowerCase() === roleFilter.toLowerCase();
 
-
     return matchesQuery && matchesRole;
   });
-
-
-
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
@@ -153,13 +160,12 @@ const UserManagement = () => {
                 </tr>
               ))}
             </tbody>
-
           </table>
         </div>
       </div>
-      {/* edit user page comes while this is true */}
 
-      {isEditModalOpen && (
+      {/* Edit Modal */}
+      {isEditModalOpen && editingUser && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg w-96">
             <h2 className="text-xl font-bold mb-4">Edit User</h2>
@@ -190,13 +196,22 @@ const UserManagement = () => {
             </select>
 
             <div className="flex justify-end space-x-2">
-              <button onClick={handleEditSubmit} className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">Save</button>
-              <button onClick={closeEditModal} className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500">Cancel</button>
+              <button
+                onClick={handleEditSubmit}
+                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+              >
+                Save
+              </button>
+              <button
+                onClick={closeEditModal}
+                className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>
       )}
-
     </div>
   );
 };

@@ -6,10 +6,8 @@ import {
   FaCheckCircle,
   FaTimesCircle,
   FaUmbrellaBeach,
-  FaListUl,
 } from "react-icons/fa";
-import { toast, ToastContainer } from "react-toastify";
-
+import { toast } from "react-toastify";
 import {
   BarChart,
   Bar,
@@ -20,94 +18,103 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
+// ---------- Types ----------
+interface Stats {
+  totalEmployees: number;
+  present: number;
+  absent: number;
+  onLeave: number;
+}
 
-const DashboardAdmin = () => {
-  // to store the stats data
-  const [stats, setStats] = useState({
+interface BarDataItem {
+  day: string;
+  Present: number;
+  Absent: number;
+}
+
+interface LeaveRequest {
+  id: string;
+  name: string;
+  fromDate: string;
+  toDate: string;
+  reason: string;
+  status: string;
+}
+
+// ---------- Component ----------
+const DashboardAdmin: React.FC = () => {
+  const [stats, setStats] = useState<Stats>({
     totalEmployees: 0,
     present: 0,
     absent: 0,
     onLeave: 0,
   });
 
-  // to store the bar data
-  const [barData, setBarData] = useState([]);
-  const [leaveData, setLeaveData] = useState([]);
+  const [barData, setBarData] = useState<BarDataItem[]>([]);
+  const [leaveData, setLeaveData] = useState<LeaveRequest[]>([]);
 
+  const handleLeaveAction = async (
+    id: string,
+    action: "Approved" | "Rejected"
+  ) => {
+    try {
+      await axios.put(
+        `${API_BASE_URL}leave/${id}/status`,
+        { status: action },
+        { withCredentials: true }
+      );
 
-  const handleLeaveAction = async (id: string, action: "Approved" | "Rejected") => {
-  try {
-    await axios.put(`http://localhost:4000/leave/${id}/status`, { status: action }, {
-      withCredentials: true,
-    });
-
-    // Optimistically update UI
-    setLeaveData(prev => prev.filter(leave => leave.id !== id));
-    toast.success(`Leave ${action}`);
-  } catch (err) {
-    console.error("Error updating leave status", err);
-    alert("Failed to update leave status");
-  }
-};
-
-
+      setLeaveData((prev) => prev.filter((leave) => leave.id !== id));
+      toast.success(`Leave ${action}`);
+    } catch (err) {
+      console.error("Error updating leave status", err);
+      alert("Failed to update leave status");
+    }
+  };
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await axios.get("http://localhost:4000/dashboard/admin/stats",{
-          withCredentials: true
-        });
+        const res = await axios.get<Stats>(
+          `${API_BASE_URL}dashboard/admin/stats`,
+          { withCredentials: true }
+        );
         setStats(res.data);
       } catch (err) {
         console.error("Error fetching stats", err);
-      } finally {
-        // setLoading(false);
+      }
+    };
+
+    const fetchBarData = async () => {
+      try {
+        const res = await axios.get<BarDataItem[]>(
+          `${API_BASE_URL}dashboard/admin/barGraph`,
+          { withCredentials: true }
+        );
+        setBarData(res.data);
+      } catch (err) {
+        console.error("Error fetching bar data", err);
+      }
+    };
+
+    const fetchLeaveData = async () => {
+      try {
+        const res = await axios.get<LeaveRequest[]>(
+          `${API_BASE_URL}leave/all`,
+          { withCredentials: true }
+        );
+        setLeaveData(res.data);
+      } catch (err) {
+        console.error("Error fetching leave data", err);
       }
     };
 
     fetchStats();
-
-    // fetching the bar data
-    const fetchBarData = async () => {
-      try {
-        const res = await axios.get("http://localhost:4000/dashboard/admin/barGraph",{
-          withCredentials: true
-        });
-        setBarData(res.data);
-        console.log(res.data);
-      } catch (err) {
-        console.error("Error fetching stats", err);
-      } finally {
-        // setLoading(false);
-      }
-    };
-
     fetchBarData();
-
-    // fetch the leave data
-    const fetchLeaveData = async () => {
-      try {
-        const res = await axios.get("http://localhost:4000/leave/all", {
-          withCredentials: true,
-        });
-        setLeaveData(res.data);
-        console.log(res.data);
-      } catch (err) {
-        console.error("Error fetching stats", err);
-      } finally {
-        // setLoading(false);
-      }
-    };
-
     fetchLeaveData();
-
   }, []);
-
-
-
-
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
@@ -118,7 +125,7 @@ const DashboardAdmin = () => {
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
           <div className="bg-blue-100 p-4 rounded-xl shadow flex items-center gap-4">
             <FaUsers className="text-blue-600 text-3xl" />
-            <div  >
+            <div>
               <p className="text-sm text-gray-500">Total Employees</p>
               <p className="text-xl font-bold">{stats.totalEmployees}</p>
             </div>
@@ -148,7 +155,9 @@ const DashboardAdmin = () => {
 
         {/* Weekly Summary Chart */}
         <div className="bg-white p-6 rounded-xl shadow-md">
-          <h2 className="text-xl font-bold mb-4">📊 Weekly Attendance Summary</h2>
+          <h2 className="text-xl font-bold mb-4">
+            📊 Weekly Attendance Summary
+          </h2>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={barData}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -161,10 +170,11 @@ const DashboardAdmin = () => {
           </ResponsiveContainer>
         </div>
 
-
         {/* Pending Leaves Section */}
         <div className="bg-white p-6 rounded-2xl shadow-md">
-          <h2 className="text-xl font-bold mb-4">🧾 Pending Leave Requests</h2>
+          <h2 className="text-xl font-bold mb-4">
+            🧾 Pending Leave Requests
+          </h2>
           {leaveData.length === 0 ? (
             <p className="text-gray-500">No pending requests.</p>
           ) : (

@@ -33,6 +33,8 @@ const dummyLeaves = [
 ];
 
 const LeaveApprovalPage = () => {
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+  
   const [leaves, setLeaves] = useState(dummyLeaves);
 
   const handleAction = (id: number, newStatus: string) => {
