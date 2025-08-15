@@ -3,46 +3,51 @@ import React, { useEffect, useState } from "react";
 import { CSVLink } from "react-csv";
 import axios from "axios";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
+interface AttendanceItem {
+  date: string;
+  checkIn?: string;
+  checkOut?: string;
+  status: string;
+  user?: {
+    name: string;
+    email: string;
+  };
+}
 
 const AttendanceHistory = () => {
-  const [attendance, setAttendance] = useState([]);
-
-  // Replace with real user data in actual app
-  const user = { name: "Aiyan", email: "aiyan@gmail.com" };
+  const [attendance, setAttendance] = useState<AttendanceItem[]>([]);
 
   useEffect(() => {
-
     const fetchAttendanceRecords = async () => {
       try {
-        const res = await axios.get("http://localhost:4000/attendance/records", {
-          withCredentials: true, // 🔒 send cookies
+        const res = await axios.get(`${API_BASE_URL}attendance/records`, {
+          withCredentials: true,
         });
 
         setAttendance(res.data);
-        console.log(res);
-
+        console.log(res.data);
       } catch (err) {
-        console.error("Failed to attendance records:", err);
+        console.error("Failed to fetch attendance records:", err);
       }
     };
 
     fetchAttendanceRecords();
-  }, []);
+  }, []); // ✅ Added dependency array so it runs only once
 
-  // Helper function
-const formatDate = (rawDate) => {
-  const date = new Date(rawDate);
-  return date.toLocaleDateString("en-IN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
-};
+  const formatDate = (rawDate: string) => {
+    const date = new Date(rawDate);
+    return date.toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
 
-  // Prepare CSV export data
   const csvData = attendance.map((item) => ({
-    name: user.name,
-    email: user.email,
+    name: item.user?.name || "--",
+    email: item.user?.email || "--",
     date: formatDate(item.date),
     checkIn: item.checkIn || "--",
     checkOut: item.checkOut || "--",

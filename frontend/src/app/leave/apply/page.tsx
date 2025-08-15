@@ -3,6 +3,8 @@ import axios from "axios";
 import React, { useState } from "react";
 
 const LeaveApplyPage = () => {
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
   const [leave, setLeave] = useState({
     leaveType: "",
     fromDate: "",
@@ -20,7 +22,7 @@ const LeaveApplyPage = () => {
     e.preventDefault();
 
     try {
-      await axios.post("http://localhost:4000/leave/apply",
+      await axios.post(`${API_BASE_URL}leave/apply`,
         leave,
         { withCredentials: true },
       );
@@ -39,7 +41,7 @@ const LeaveApplyPage = () => {
 
     } catch (err) {
       console.log(err);
-      alert("Error submitting leave data" + err.message);
+      alert("Error submitting leave data");
     }
     console.log("Leave Submitted:", leave);
   };

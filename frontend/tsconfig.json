@@ -34,7 +34,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "src/app/components/ProtectedAdminRoute.jsx"
-  ],
+, "src/app/admin/attendance/page.tsx"  ],
   "exclude": [
     "node_modules"
   ]

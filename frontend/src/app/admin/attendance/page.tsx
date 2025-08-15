@@ -2,8 +2,22 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-const AdminAttendanceFilter = () => {
-  const [data, setData] = useState([]);
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
+// ✅ Define a type for attendance entries
+interface AttendanceEntry {
+  userId?: {
+    name?: string;
+    email?: string;
+  };
+  date?: string;
+  checkIn?: string;
+  checkOut?: string;
+  status?: string;
+}
+
+const AdminAttendanceFilter: React.FC = () => {
+  const [data, setData] = useState<AttendanceEntry[]>([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [fromDate, setFromDate] = useState("");
@@ -16,11 +30,11 @@ const AdminAttendanceFilter = () => {
     const fetchAttendance = async () => {
       try {
         setLoading(true);
-        const res = await axios.get("http://localhost:4000/attendance/all", {
-          withCredentials : true
-        });
+        const res = await axios.get<AttendanceEntry[]>(
+          `${API_BASE_URL}attendance/all`,
+          { withCredentials: true }
+        );
         setData(res.data);
-        console.log(data); // adjust if your API returns data in a nested format
       } catch (err) {
         console.error(err);
         setError("Failed to fetch attendance data");
@@ -30,31 +44,31 @@ const AdminAttendanceFilter = () => {
     };
 
     fetchAttendance();
-  }, []);
+  }, []); // ✅ fixed dependency array
 
   const filtered = data.filter((entry) => {
-  const nameMatch =
-    entry.userId?.name?.toLowerCase().includes(search.toLowerCase()) ||
-    entry.userId?.email?.toLowerCase().includes(search.toLowerCase());
+    const nameMatch =
+      entry.userId?.name?.toLowerCase().includes(search.toLowerCase()) ||
+      entry.userId?.email?.toLowerCase().includes(search.toLowerCase());
 
-  const statusMatch = statusFilter ? entry.status === statusFilter : true;
+    const statusMatch = statusFilter ? entry.status === statusFilter : true;
 
-  const dateMatch =
-    (!fromDate || entry.date >= fromDate) &&
-    (!toDate || entry.date <= toDate);
+    const dateMatch =
+      (!fromDate || (entry.date ?? "") >= fromDate) &&
+      (!toDate || (entry.date ?? "") <= toDate);
 
-  return nameMatch && statusMatch && dateMatch;
-});
-
-const formatDate = (isoDate) => {
-  if (!isoDate) return "—";
-  const date = new Date(isoDate);
-  return date.toLocaleDateString('en-IN', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
+    return nameMatch && statusMatch && dateMatch;
   });
-};
+
+  const formatDate = (isoDate?: string) => {
+    if (!isoDate) return "—";
+    const date = new Date(isoDate);
+    return date.toLocaleDateString("en-IN", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
@@ -119,7 +133,9 @@ const formatDate = (isoDate) => {
                   <tr key={idx} className="border-b hover:bg-gray-50">
                     <td className="px-4 py-2">{entry.userId?.name || "—"}</td>
                     <td className="px-4 py-2">{entry.userId?.email || "—"}</td>
-                    <td className="px-4 py-2">{formatDate(entry.date) || "—"}</td>
+                    <td className="px-4 py-2">
+                      {formatDate(entry.date) || "—"}
+                    </td>
                     <td className="px-4 py-2">{entry.checkIn || "—"}</td>
                     <td className="px-4 py-2">{entry.checkOut || "—"}</td>
                     <td className="px-4 py-2">

@@ -4,7 +4,7 @@ import DashboardUser2 from '@/components/Dashboard-user/DashboardUser2'
 const page = () => {
   return (
     <div>
-        <DashboardUser2/>
+        <DashboardUser2 />
     </div>
   )
 }

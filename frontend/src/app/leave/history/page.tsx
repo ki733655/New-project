@@ -2,15 +2,18 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { CSVLink } from "react-csv";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
 
 const LeaveHistoryPage = () => {
+  
   const [leaves, setLeaves] = useState([]);
 
   useEffect(() => {
     const fetchleavedata = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:4000/leave/user/history", // same as clock-in
+        `${API_BASE_URL}leave/user/history`, // same as clock-in
         { withCredentials: true }
       );
 

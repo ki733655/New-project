@@ -1,27 +1,32 @@
 "use client";
 import axios from "axios";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
 import { ImSpinner4 } from "react-icons/im";
 
-const Login = () => {
-  const router = useRouter();
-  const [data, setData] = useState({ email: "", password: "" });
-  const [loading, setLoading] = useState(false);
-  // const [checkingAuth, setCheckingAuth] = useState(true); // NEW
+interface LoginForm {
+  email: string;
+  password: string;
+}
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
-  const handleChange = (e) => {
+
+const Login: React.FC = () => {
+  const router = useRouter();
+  const [data, setData] = useState<LoginForm>({ email: "", password: "" });
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     setData((prev) => ({ ...prev, [id]: value }));
   };
 
-    const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await axios.post("http://localhost:4000/login", data, {
+      const res = await axios.post(`${API_BASE_URL}login`, data, {
         withCredentials: true,
       });
 
@@ -33,39 +38,13 @@ const Login = () => {
       } else {
         router.push("/dashboard/user");
       }
-
-    } catch (err) {
+    } catch (err: any) {
       alert(err.response?.data?.message || "Login failed");
     } finally {
       setLoading(false);
     }
-  }
+  };
 
-  // ✅ Check auth on mount securely
-  // useEffect(() => {
-  //   const token = Cookies.get("token");
-  //   if (!token) {
-  //     // setCheckingAuth(false);
-  //     return;
-  //   }
-
-  //   axios.get("http://localhost:4000/me", {
-  //     headers: {
-  //       Authorization: `Bearer ${token}`,
-  //     },
-  //   })
-  //   .then((res) => {
-  //     const { role } = res.data;
-  //     if (role === "admin") router.push("/dashboard-admin");
-  //     else router.push("/dashboard-user");
-  //   })
-  //   .catch(() => {
-  //     Cookies.remove("token");
-  //     // setCheckingAuth(false);
-  //   });
-  // }, []);
-
-  // 🔄 Show spinner while checking auth
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-white">
@@ -77,10 +56,10 @@ const Login = () => {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-blue-600 px-4">
+    <div className="flex items-center justify-center min-h-screen bg-green-500 px-4">
       <div className="w-full max-w-sm">
         <h2 className="text-center text-3xl font-bold text-white mb-2">
-          Let's You Login
+          Let&apos;s You Login
         </h2>
         <p className="text-center text-lg text-white mb-8">
           Welcome to TrackMate
@@ -118,20 +97,15 @@ const Login = () => {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full rounded-md py-2 px-4 font-semibold ${loading
-              ? "bg-indigo-400 cursor-not-allowed"
-              : "bg-indigo-600 hover:bg-indigo-500 text-white"
-              }`}
+            className={`w-full rounded-md py-2 px-4 font-semibold ${
+              loading
+                ? "bg-green-500 cursor-not-allowed"
+                : "bg-green-600 hover:bg-green-800 text-white"
+            }`}
           >
             {loading ? "Logging in..." : "Log in"}
           </button>
         </form>
-
-        <Link href="/forgot-pass">
-          <p className="text-center text-sm text-white mt-4 cursor-pointer hover:underline">
-            Forgot Password?
-          </p>
-        </Link>
       </div>
     </div>
   );

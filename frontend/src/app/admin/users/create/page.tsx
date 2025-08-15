@@ -2,8 +2,10 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
-const page = () => {
+const Page = () => {
+  
   const router = useRouter();
   const [formData, setFormData] = useState({
     empId: "",
@@ -13,20 +15,22 @@ const page = () => {
     password: "",
   });
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+ const handleChange = (
+  e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+) => {
+  setFormData({ ...formData, [e.target.name]: e.target.value });
+};
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
-      await axios.post("http://localhost:4000/create/user", formData);
+      await axios.post(`${API_BASE_URL}create/user`, formData);
       alert("User created successfully!");
       router.push("/admin/users/manage");  // Redirect back to Manage Users page
     } catch (error) {
       console.error("Error creating user:", error);
-      alert(error.response?.data?.message || "Error creating user");
+      alert("Error creating user");
     }
   };
 
@@ -89,4 +93,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
