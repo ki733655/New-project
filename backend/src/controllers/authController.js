@@ -72,32 +72,32 @@ const login = async (req, res) => {
 
     // Send token + user info
    const cookieOptions = {
-      httpOnly: true,
-      secure: true, // secure only in prod
-      sameSite: "none",
-      maxAge: 7 * 24 * 60 * 60 * 1000
-    };
-
-    res
-      .cookie("token", token, cookieOptions)
-      .cookie("role", user.role, {
-        ...cookieOptions,
-        httpOnly: false // role readable on frontend
-      })
-      .status(200)
-      .json({
-        message: "Login successful",
-        user: {
-          _id: user._id,
-          name: user.name,
-          email: user.email,
-          role: user.role
-        }
-      });
-  } catch (err) {
-    res.status(500).json({ message: "Server error" });
-  }
+  httpOnly: true,
+  secure: true, // must be true in production
+  sameSite: "none", // allow cross-site
+  domain: ".trackmatee.vercel.app", // 👈 important
+  maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
 };
+
+res.setHeader("Cache-Control", "no-store"); // 👈 prevent Vercel caching
+
+res
+  .cookie("token", token, cookieOptions)
+  .cookie("role", user.role, {
+    ...cookieOptions,
+    httpOnly: false // role readable on frontend
+  })
+  .status(200)
+  .json({
+    message: "Login successful",
+    user: {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role
+    }
+  });
+
 
 
 const logout = (req, res) => {
