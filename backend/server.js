@@ -25,12 +25,13 @@ connectionToDatabase();
 
 
 // Middleware to parse JSON bodies
-app.use(
-  cors({
-    origin: "https://trackmatee.vercel.app", // frontend origin
-    credentials: true, // allow cookies
-  })
-);
+app.use(cors({
+  origin: "https://trackmatee.vercel.app",
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
+
 
 app.use(express.json());
 app.use(cookieParser());
