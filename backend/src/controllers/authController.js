@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const { JWT_SECRET } = require("../config/config");
-
+ 
 const register = async (req, res) => {
   const { name, email, password, role, empId } = req.body;
 
@@ -71,18 +71,18 @@ const login = async (req, res) => {
     );
 
     // Send token + user info
+   const cookieOptions = {
+      httpOnly: true,
+      secure: true, // secure only in prod
+      sameSite: "none",
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    };
+
     res
-      .cookie("token", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      })
+      .cookie("token", token, cookieOptions)
       .cookie("role", user.role, {
-        httpOnly: false, // role can be readable by frontend too
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        ...cookieOptions,
+        httpOnly: false // role readable on frontend
       })
       .status(200)
       .json({
@@ -91,8 +91,8 @@ const login = async (req, res) => {
           _id: user._id,
           name: user.name,
           email: user.email,
-          role: user.role,
-        },
+          role: user.role
+        }
       });
   } catch (err) {
     res.status(500).json({ message: "Server error" });
