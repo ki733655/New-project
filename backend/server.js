@@ -9,22 +9,25 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 const cookieParser = require("cookie-parser");
 require("./src/routes/cronJobs/autoAbsent");
+const MONGO_URI= process.env.MONGO_URI;
 
 // connection to database
-const connectionToDatabase = () => {
+const connectionToDatabase = async () => {
   try {
-    mongoose.connect("mongodb://localhost:27017/login");
-    console.log("db connected");
+    await mongoose.connect(MONGO_URI);
+    console.log("DB connected successfully");
   } catch (err) {
-    console.log("error connecting to db", err);
+    console.error("Error connecting to DB:", err);
+    process.exit(1); // exit if connection fails
   }
 };
 connectionToDatabase();
 
+
 // Middleware to parse JSON bodies
 app.use(
   cors({
-    origin: "http://localhost:3000", // frontend origin
+    origin: "https://trackmatee.vercel.app", // frontend origin
     credentials: true, // allow cookies
   })
 );
