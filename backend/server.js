@@ -26,7 +26,7 @@ connectionToDatabase();
 
 // Middleware to parse JSON bodies
 app.use(cors({
-  origin: "https://trackmatee.vercel.app",
+  origin: "https://trackmatee.netlify.app",
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"]
