@@ -54,8 +54,6 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   const { email, password } = req.body;
-
-  try {
     const user = await User.findOne({ email });
     if (!user) return res.status(401).json({ message: "Invalid credentials" });
 
@@ -78,6 +76,7 @@ const login = async (req, res) => {
   domain: ".trackmatee.vercel.app", // 👈 important
   maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
 };
+};
 
 res.setHeader("Cache-Control", "no-store"); // 👈 prevent Vercel caching
 
@@ -97,8 +96,6 @@ res
       role: user.role
     }
   });
-
-
 
 const logout = (req, res) => {
   res.clearCookie("token");

@@ -1,50 +1,58 @@
-// middleware.ts
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import jwt from "jsonwebtoken";
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
 export function middleware(req: NextRequest) {
-  const token = req.cookies.get("token")?.value;
+  const token = req.cookies.get('token')?.value;
+  const role = req.cookies.get('role')?.value;
+
   const { pathname } = req.nextUrl;
 
-  // Public routes (login page, static files, API routes)
-  if (pathname.startsWith("/login") || pathname.startsWith("/_next") || pathname.startsWith("/api")) {
+  // Skip static files and API routes
+  if (
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/api') ||
+    pathname.startsWith('/favicon.ico')
+  ) {
     return NextResponse.next();
   }
 
-  // No token → go to login
+  // 1️⃣ Root path → redirect based on token & role
+  if (pathname === '/') {
+    if (!token) {
+      return NextResponse.redirect(new URL('/login', req.url));
+    }
+    if (role === 'admin') {
+      return NextResponse.redirect(new URL('/dashboard/admin', req.url));
+    }
+    if (role === 'user') {
+      return NextResponse.redirect(new URL('/dashboard/user', req.url));
+    }
+  }
+
+  // 2️⃣ No token → allow login, block others
   if (!token) {
-    return NextResponse.redirect(new URL("/login", req.url));
+    if (pathname === '/login') return NextResponse.next();
+    return NextResponse.redirect(new URL('/login', req.url));
   }
 
-  try {
-    const payload: any = jwt.verify(token, process.env.JWT_SECRET!);
-
-    // If visiting /, send to correct dashboard
-    if (pathname === "/") {
-      if (payload.role === "admin") {
-        return NextResponse.redirect(new URL("/dashboard/admin", req.url));
-      }
-      return NextResponse.redirect(new URL("/dashboard/user", req.url));
+  // 3️⃣ Token exists → prevent going back to login
+  if (pathname === '/login') {
+    if (role === 'admin') {
+      return NextResponse.redirect(new URL('/dashboard/admin', req.url));
     }
-
-    // Protect admin pages
-    if (pathname.startsWith("/dashboard/admin") && payload.role !== "admin") {
-      return NextResponse.redirect(new URL("/dashboard/user", req.url));
+    if (role === 'user') {
+      return NextResponse.redirect(new URL('/dashboard/user', req.url));
     }
-
-    // Protect user pages
-    if (pathname.startsWith("/dashboard/user") && payload.role !== "user") {
-      return NextResponse.redirect(new URL("/dashboard/admin", req.url));
-    }
-
-    return NextResponse.next();
-  } catch (err) {
-    // Invalid token → login
-    return NextResponse.redirect(new URL("/login", req.url));
   }
+
+  // 4️⃣ Role-based dashboard access
+  if (pathname.startsWith('/dashboard/admin') && role !== 'admin') {
+    return NextResponse.redirect(new URL('/dashboard/user', req.url));
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/", "/dashboard/:path*"], // match protected routes
+  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
 };
