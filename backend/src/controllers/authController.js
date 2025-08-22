@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const { JWT_SECRET } = require("../config/config");
- 
+
 const register = async (req, res) => {
   const { name, email, password, role, empId } = req.body;
 
@@ -54,48 +54,48 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   const { email, password } = req.body;
-    const user = await User.findOne({ email });
-    if (!user) return res.status(401).json({ message: "Invalid credentials" });
+  const user = await User.findOne({ email });
+  if (!user) return res.status(401).json({ message: "Invalid credentials" });
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch)
-      return res.status(401).json({ message: "Invalid credentials" });
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
 
-    // Create JWT Token
-    const token = jwt.sign(
-      { id: user._id, email: user.email, role: user.role },
-      JWT_SECRET,
-      { expiresIn: "7d" }
-    );
+  // Create JWT Token
+  const token = jwt.sign(
+    { id: user._id, email: user.email, role: user.role },
+    JWT_SECRET,
+    { expiresIn: "7d" }
+  );
 
-    // Send token + user info
-   const cookieOptions = {
-  httpOnly: true,
-  secure: true, // must be true in production
-  sameSite: "none", // allow cross-site
-  domain: ".trackmatee.vercel.app", // 👈 important
-  maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+  // Send token + user info
+  const cookieOptions = {
+    httpOnly: true,
+    secure: true, // must be true in production
+    sameSite: "none", // allow cross-site
+    domain: ".trackmatee.netlify.app", // 👈 important
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  };
+
+  res.setHeader("Cache-Control", "no-store"); // 👈 prevent Vercel caching
+  
+  res
+    .cookie("token", token, cookieOptions)
+    .cookie("role", user.role, {
+      ...cookieOptions,
+      httpOnly: false, // role readable on frontend
+    })
+    .status(200)
+    .json({
+      message: "Login successful",
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
 };
-};
 
-res.setHeader("Cache-Control", "no-store"); // 👈 prevent Vercel caching
-
-res
-  .cookie("token", token, cookieOptions)
-  .cookie("role", user.role, {
-    ...cookieOptions,
-    httpOnly: false // role readable on frontend
-  })
-  .status(200)
-  .json({
-    message: "Login successful",
-    user: {
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role
-    }
-  });
 
 const logout = (req, res) => {
   res.clearCookie("token");
