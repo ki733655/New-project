@@ -24,7 +24,7 @@ const EditProfile: React.FC = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get<User>(`${API_BASE_URL}me`, {
+        const res = await axios.get<User>(`${API_BASE_URL}get/profile`, {
           withCredentials: true,
         });
         setUser(res.data);
