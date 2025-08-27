@@ -26,10 +26,13 @@ connectionToDatabase();
 
 // Middleware to parse JSON bodies
 app.use(cors({
-  origin: "https://trackmatee.netlify.app",
+  origin: [
+      "http://localhost:3000",         // local frontend
+      "https://trackmatee.netlify.app" // deployed frontend
+    ],
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
+  allowedHeaders: ["Content-Type", "Authorization"],
 }));
 
 

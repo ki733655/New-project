@@ -70,14 +70,18 @@ const login = async (req, res) => {
   // Send token + user info
   const cookieOptions = {
     httpOnly: true,
-    secure: true, // must be true in production
-    sameSite: "none", // allow cross-site
-    domain: ".trackmatee.netlify.app", // 👈 important
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    secure: process.env.NODE_ENV === "production", // true only in prod
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
   };
 
+  // Only set domain in production
+  if (process.env.NODE_ENV === "production") {
+    cookieOptions.domain = ".trackmatee.netlify.app";
+  }
+
   res.setHeader("Cache-Control", "no-store"); // 👈 prevent Vercel caching
-  
+
   res
     .cookie("token", token, cookieOptions)
     .cookie("role", user.role, {
@@ -95,7 +99,6 @@ const login = async (req, res) => {
       },
     });
 };
-
 
 const logout = (req, res) => {
   res.clearCookie("token");
