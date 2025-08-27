@@ -78,7 +78,7 @@ const DashboardUser2: React.FC = () => {
 
     const fetchUser = async () => {
       try {
-        const res = await axios.get(`${API_BASE_URL}me`, {
+        const res = await axios.get(`${API_BASE_URL}get/profile`, {
           withCredentials: true,
         });
         setProfilePic(res.data.profilePicUrl);

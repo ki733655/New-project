@@ -4,6 +4,12 @@ const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const { JWT_SECRET } = require("../config/config");
 
+// for the upload of photo
+const BASE_URL = process.env.NODE_ENV === "production"
+  ? process.env.BACKEND_URL 
+  : "http://localhost:4000";
+
+
 const register = async (req, res) => {
   const { name, email, password, role, empId } = req.body;
 
@@ -107,6 +113,7 @@ const logout = (req, res) => {
   res.json({ message: "Logged out successfully" });
 };
 
+
 // to update profile and password
 const updateProfile = async (req, res) => {
   try {
@@ -134,7 +141,17 @@ const updateProfile = async (req, res) => {
     }
 
     await user.save();
-    res.json({ message: "Profile updated successfully", user });
+    res.json({
+      message: "Profile updated successfully",
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        profilePhoto: user.profilePhoto
+          ? `${BASE_URL}/uploads/profile-photos/${user.profilePhoto}`
+          : "",
+      },
+    });
     console.log("profile updated");
   } catch (err) {
     console.error(err);
@@ -142,13 +159,14 @@ const updateProfile = async (req, res) => {
   }
 };
 
-const me = (req, res) => {
+const getProfile = (req, res) => {
   try {
     const { _id, name, email, profilePhoto } = req.user;
 
     const profilePicUrl = profilePhoto
-      ? `http://localhost:4000/uploads/profile-photos/${profilePhoto}`
-      : ""; // Default/fallback if not set
+      ? `${BASE_URL}/uploads/profile-photos/${profilePhoto}`
+      : "";
+    // Default/fallback if not set
 
     res.json({ _id, name, email, profilePicUrl });
     console.log(req.user);
@@ -158,4 +176,4 @@ const me = (req, res) => {
   }
 };
 
-module.exports = { register, login, logout, updateProfile, me };
+module.exports = { register, login, logout, updateProfile, getProfile };
