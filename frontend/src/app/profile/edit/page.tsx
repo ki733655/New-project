@@ -63,7 +63,10 @@ const EditProfile: React.FC = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log(res);
+      if (res.data.user) {
+        setUser(res.data.user); // 👈 update state
+        setPreviewUrl(res.data.user.profilePhoto); // 👈 show new uploaded photo
+      }
 
       alert("Profile updated successfully");
     } catch (err) {
