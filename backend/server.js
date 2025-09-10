@@ -6,16 +6,29 @@ const path = require("path");
 const port = 4000;
 const indexRoute = require("./src/routes/index");
 const mongoose = require("mongoose");
-require("dotenv").config();
+// require("dotenv").config();
+const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 require("./src/routes/cronJobs/autoAbsent");
-const MONGO_URI= process.env.MONGO_URI;
+// const MONGO_URI= process.env.MONGO_URI;
+// Load correct .env file
+dotenv.config({
+  path: process.env.NODE_ENV === "production" 
+    ? ".env.production" 
+    : ".env.development"
+});
+
+
+const MONGO_URI =
+  process.env.NODE_ENV === "production"
+    ? process.env.MONGO_URI_PROD   // Production DB
+    : process.env.MONGO_URI_LOCAL; // Local DB
 
 // connection to database
 const connectionToDatabase = async () => {
   try {
     await mongoose.connect(MONGO_URI);
-    console.log("DB connected successfully");
+    console.log("DB connected successfully", MONGO_URI);
   } catch (err) {
     console.error("Error connecting to DB:", err);
     process.exit(1); // exit if connection fails
